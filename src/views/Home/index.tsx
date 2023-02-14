@@ -173,10 +173,11 @@ const Home = () => {
   }
 
   useEffect(() => {
-    if (roleUser == 'ADMIN') {
+    if (roleUser === 'ADMIN') {
       setMenus([...admin])
       getAbsents({limit: 100})
     } else {
+      setActiveMenu('absent')
       setMenus([...staff])
     }
   }, [])
