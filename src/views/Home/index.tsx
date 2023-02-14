@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import {
   UserOutlined,
   LogoutOutlined,
@@ -9,18 +9,30 @@ import {
 } from '@ant-design/icons';
 import { Layout, Menu, Table } from 'antd';
 import { useNavigate } from "react-router-dom";
+import Webcam from 'react-webcam'
+const WebcamComponent = () => <Webcam />
+const videoConstraints = {
+  width: 400,
+  height: 400,
+  facingMode: 'user',
+}
+
 
 import useHome from "./useHome"
 import RegisterForm from "../../components/RegisterForm";
 
 const Home = () => {
   const navigateTo = useNavigate()
+  const [menus, setMenus] = useState<any>([])
+  const [picture, setPicture] = useState<any>(null)
+
   const { 
     state: {
       role,
       isShow,
       errors,
       absents,
+      roleUser,
       password,
       collapsed,
       activeMenu,
@@ -35,10 +47,20 @@ const Home = () => {
       getAbsents,
       setPassword,
       setCollapsed,
+      uploadAbsent,
       setActiveMenu,
       handleRegister,
     }
   } = useHome()
+
+  const webcamRef = React.useRef<any>(null)
+  const capture = React.useCallback(async () => {
+    const pictureSrc = webcamRef.current.getScreenshot()
+    setPicture(pictureSrc)
+    const file = await dataUrlToFile(pictureSrc, 'upload' + Math.random() * 1000)
+    uploadAbsent(file)
+  }, [webcamRef, setPicture])
+
   const { Header, Sider, Content } = Layout;
 
   const columns = [
@@ -61,8 +83,102 @@ const Home = () => {
     },
   ];
 
+  const admin = [
+    {
+      key: 'absents',
+      icon: <OrderedListOutlined />,
+      label: 'Absents',
+    },
+    {
+      key: 'register',
+      icon: <UserOutlined />,
+      label: 'Create User',
+    },
+  ]
+
+  const staff = [
+    {
+      key: 'absent',
+      icon: <UserOutlined />,
+      label: 'Absent',
+    },
+  ]
+
+  async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
+    const res: Response = await fetch(dataUrl);
+    const blob: Blob = await res.blob();
+    return new File([blob], fileName, { type: 'image/png' });
+  }
+
+  const renderBody = (key: string) => {
+    switch (key) {
+      case 'absents':
+        return <Table
+          dataSource={absents}
+          columns={columns}
+        />
+      case 'register':
+        return <RegisterForm
+          role={role}
+          isShow={isShow}
+          errors={errors}
+          email={emailRegis}
+          password={password}
+
+          setRole={setRole}
+          setEmail={setEmail}
+          setIsShow={setIsShow}
+          setPassword={setPassword}
+          handleRegister={handleRegister}
+        />
+      case 'absent':
+        return <div className="flex flex-col justify-center items-center gap-4">
+          {!picture ? (
+            <Webcam
+              audio={false}
+              height={400}
+              ref={webcamRef}
+              width={400}
+              screenshotFormat="image/jpeg"
+              videoConstraints={videoConstraints}
+            />
+          ) : (
+            <img src={picture} />
+          )}
+          {!!picture ? (
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                setPicture('')
+              }}
+              className="bg-blue-500 rounded text-white p-3"
+            >
+              Retake
+            </button>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                capture()
+              }}
+              className="bg-blue-500 rounded text-white p-3"
+            >
+              Capture
+            </button>
+          )}
+        </div>
+      default:
+        return null
+    }
+  }
+
   useEffect(() => {
-    getAbsents({limit: 100})
+    if (roleUser == 'ADMIN') {
+      setMenus([...admin])
+      getAbsents({limit: 100})
+    } else {
+      setMenus([...staff])
+    }
   }, [])
 
   return (
@@ -81,16 +197,7 @@ const Home = () => {
           }}
           defaultSelectedKeys={[activeMenu]}
           items={[
-            {
-              key: 'absents',
-              icon: <OrderedListOutlined />,
-              label: 'Absents',
-            },
-            {
-              key: 'register',
-              icon: <UserOutlined />,
-              label: 'Create User',
-            },
+            ...menus,
             {
               key: 'logout',
               icon: <LogoutOutlined />,
@@ -116,27 +223,8 @@ const Home = () => {
             background: colorBgContainer,
           }}
         >
-          {
-            activeMenu == 'absents'
-            ? <Table
-                dataSource={absents}
-                columns={columns}
-              />
-            : <RegisterForm
-                role={role}
-                email={emailRegis}
-                isShow={isShow}
-                errors={errors}
-                password={password}
-      
-                setRole={setRole}
-                setEmail={setEmail}
-                setIsShow={setIsShow}
-                setPassword={setPassword}
-                handleRegister={handleRegister}
-              />
-          }
-          {!!successMessage && <span className="text-green-500">{successMessage}</span>}
+          {renderBody(activeMenu)}
+          {!!successMessage && <span className="text-green-500 mt-3">{successMessage}</span>}
         </Content>
       </Layout>
     </Layout>

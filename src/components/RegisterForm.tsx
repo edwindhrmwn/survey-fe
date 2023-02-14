@@ -75,7 +75,7 @@ const RegisterForm = (props: IProps) => {
       </form>
 
       <div className="flex justify-center p-2 rounded cursor-pointer w-full bg-blue-600 text-white hover:bg-blue-500" onClick={(e: any) => handleRegister(e)} >Create</div>
-      {!!errors.length && 
+      {!!errors && !!errors.length && 
         <ul className="flex flex-col text-red-400">
           {errors.map((e: any) => <li key={e} className="flex items-center">* {e}</li>)}
         </ul>

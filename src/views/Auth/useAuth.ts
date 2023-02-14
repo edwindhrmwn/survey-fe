@@ -30,10 +30,10 @@ const useOnboard = () => {
       const { data } = await axios.post(import.meta.env.VITE_BE_BASE_URL + '/login', {
         email, password
       })
-
-      dispatch(login({id: data.data.id, email, access_token: data.data.access_token}))
+      dispatch(login({id: data.data.id, email, access_token: data.data.access_token, role: data.data.role}))
       sessionStorage.setItem('access_token', data.data.access_token)
       sessionStorage.setItem('email', email)
+      sessionStorage.setItem('role', data.data.role)
       
       resetValue()
       navigateTo('/')

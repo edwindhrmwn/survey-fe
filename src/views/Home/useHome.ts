@@ -22,7 +22,7 @@ const useHome = () => {
 
   const user = useSelector((state: any) => state.user);
 
-  const { email, access_token} = user
+  const { email, access_token, role : roleUser } = user
 
   const {
     token: { colorBgContainer },
@@ -78,6 +78,34 @@ const useHome = () => {
     }
   }
 
+  const uploadAbsent = async (file: any) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      await axios({
+        method: 'POST',
+        url: `${import.meta.env.VITE_BE_BASE_URL}/absent`,
+        headers: {
+          access_token: access_token || sessionStorage.getItem('access_token'),
+          "Content-Type": "multipart/form-data"
+        },
+        data: formData
+      })
+      setSuccessMessage('Your absent is submited, thank you!')
+
+      setTimeout(() => {
+        setSuccessMessage('')
+      }, 5000);
+    } catch (error: any) {
+      setErrors(error.response.data.messages)
+      setTimeout(() => {
+        setErrors([])
+      }, 5000);
+      console.log(error.response.data.messages)
+    }
+  }
+
   return {
     state: {
       role,
@@ -85,6 +113,7 @@ const useHome = () => {
       isShow,
       errors,
       absents,
+      roleUser,
       password,
       collapsed,
       isLoading,
@@ -100,6 +129,7 @@ const useHome = () => {
       getAbsents,
       setPassword,
       setCollapsed,
+      uploadAbsent,
       setActiveMenu,
       handleRegister,
     }
