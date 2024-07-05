@@ -17,7 +17,7 @@ const ProtectRoute = () => {
       {
         !!isLoggedIn ?
           <Outlet />
-        : <Navigate to={'/auth'}/>
+        : <Navigate to={'/login'}/>
       }
     </Suspense>
   );
@@ -31,7 +31,7 @@ const routes = [
     Element: Home
   },
   {
-    path: '/auth',
+    path: '/login',
     name: 'Authtentication',
     Element: Auth
   },
@@ -40,7 +40,7 @@ const routes = [
 const Router = () => {
   return (
     <Routes>
-      <Route element={<Auth/>} path={'/auth'} />
+      <Route element={<Auth/>} path={'/login'} />
       <Route element={<ProtectRoute />}>
         {routes.map((page, idx) => {
           const Element = page.Element

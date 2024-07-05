@@ -16,55 +16,64 @@ interface IProps {
 
 const LoginForm = (props: IProps) => {
   const {
-      email,
-      errors,
-      isShow,
-      password,
-      setEmail,
-      setIsShow,
-      setPassword,
+    email,
+    errors,
+    isShow,
+    password,
+    setEmail,
+    setIsShow,
+    setPassword,
 
-      handleLogin,
+    handleLogin,
   } = props
 
   return (
-    <section className="flex h-screen items-center justify-center flex-col gap-8 min-w-[400px] w-[40vw] bg-white p-8">
-      <span className="text-xl font-bold">Login Account</span>
+    <section className="flex h-[50vh] items-center justify-center flex-col gap-5 min-w-[400px] w-[40vw] bg-white p-8">
+      <span className="text-xl font-bold">MASUK</span>
 
       <form className="flex flex-col gap-5 w-full" autoComplete="asdasdsa" onSubmit={handleLogin}>
         <div className="flex flex-col gap-2">
-          <label>Email</label>
           <input
-              onInput={(e: any) => setEmail(e.target.value)}
-              placeholder="Email"
-              autoComplete="test@test.com"
-              value={email}
-              type="email"
-              className="w-full p-1 border"
-              required={true}
+            onInput={(e: any) => setEmail(e.target.value)}
+            placeholder="Email"
+            autoComplete="test@test.com"
+            value={email}
+            type="email"
+            className="w-full p-3 border"
+            required={true}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label>Password</label>
           <div className='flex relative items-center'>
             <input
               onInput={(e: any) => setPassword(e.target.value)}
               placeholder="Password"
               autoComplete="new-password"
               value={password}
-              type={isShow ? "text": "password"}
-              className='w-full p-1 border'
+              type={isShow ? "text" : "password"}
+              className='w-full p-3 border'
             />
             <span className='absolute right-3 cursor-pointer' onClick={() => setIsShow(!isShow)}>
-              <img src={EyeIcon} />
+              <img src={EyeIcon} style={{ color: '#DEDEDE' }} />
             </span>
-            </div>
           </div>
-          <input type="submit" hidden/>
+        </div>
+        <input type="submit" hidden />
       </form>
 
-      <div className="flex justify-center p-2 rounded cursor-pointer w-full bg-blue-600 text-white hover:bg-blue-500" onClick={(e: any) => handleLogin(e)} >Submit</div>
-      {!!errors.length && 
+      <div className='flex w-full justify-start text-blue-600 underline'>
+        <span>Lupa kata sandi anda?</span>
+      </div>
+
+      <div className='flex w-full justify-end'>
+        <div
+          className="flex justify-center p-2 w-[120px] rounded cursor-pointer bg-[#D9D9D9] hover:bg-[#DEDEDE]"
+          onClick={(e: any) => handleLogin(e)}
+        >
+          LOGIN
+        </div>
+      </div>
+      {!!errors.length &&
         <ul className="flex flex-col text-red-400">
           {errors.map((e: any) => <li key={e} className="flex items-center">* {e}</li>)}
         </ul>

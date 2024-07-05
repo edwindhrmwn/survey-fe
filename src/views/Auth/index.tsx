@@ -20,8 +20,7 @@ const OnBoarding = () => {
 
 
   return (
-    <div className="h-screen w-screen flex bg-[#001628] p-4 justify-between items-center">
-      <section className='flex justify-center min-w-[40vw] text-white font-bold'>MONITORING APP WEB</section>
+    <div className="h-screen w-screen flex bg-[#DEDEDE] p-4 justify-center items-center">
       <LoginForm
         email={email}
         isShow={isShow}
