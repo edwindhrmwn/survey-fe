@@ -180,85 +180,90 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      {categoryCriteria.map((e: any, i: Key) => {
-        return <div key={i}>
-          <div className="w-100 mb-2">
-            <div className="card border-left-primary shadow py-2">
-              <div className="card-body">
-                <div className="row no-gutters align-items-center">
-                  <div className="col mr-2">
-                    <div className="fs-3 font-weight-bold text-primary text-uppercase">
-                      Kriteria {+i + 1} - {e.categoryName}</div>
+    <>
+      <div className="w-full flex justify-between mb-2">
+        <div className="text-xl mb-2"><b>Survey Dashbord</b></div>
+      </div>
+      <div className="flex flex-col gap-5">
+        {categoryCriteria.map((e: any, i: Key) => {
+          return <div key={i}>
+            <div className="w-100 mb-2">
+              <div className="card border-left-primary shadow py-2">
+                <div className="card-body">
+                  <div className="row no-gutters align-items-center">
+                    <div className="col mr-2">
+                      <div className="fs-3 font-weight-bold text-primary text-uppercase">
+                        Kriteria {+i + 1} - {e.categoryName}</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-wrap gap-4">
-            {e.criteria.map((detail: any, idx: Key) => {
-              return <div className="card shadow col-6 col-sm-3" key={idx}>
-                <div className="card-header">
-                  <h6 className="m-0 font-weight-bold text-primary">Tabel {+i + 1}{e.criteria.length > 1 ? `.${+idx + 1}` : ''}</h6>
-                </div>
-                <div className="card-body mt-2 text-dark">
-                  <h6>{detail.instrumentName}</h6>
-                  {detail.questions > 0 &&
-                    <a
-                      data-toggle="modal"
-                      data-target="#tabel1Modal"
-                      className="btn btn-primary btn-icon-split"
-                      onClick={() => handleOpenQuestion(detail.id)}
-                      style={{
-                        backgroundColor: detail.questions > 0 && !!detail.isCompleted ? '#C5D3E0' : '#0C6DFD',
-                        color: detail.questions > 0 && !!detail.isCompleted ? 'black' : 'white',
-                      }}
-                    >
-                      <span className="text">{detail.questions > 0 && !!detail.isCompleted ? 'Sudah di isi' : 'Isi Survei'}</span>
-                    </a>
-                  }
-                </div>
-                <Modal show={openQuestion && activeQuestion == detail.id} onHide={handleCloseQuestion}>
-                  <Modal.Header closeButton>
-                    <div>
-                      <Modal.Title>Tabel {+i + 1}{e.criteria.length > 1 ? `.${+idx + 1}` : ''}</Modal.Title>
-                      <Modal.Title>{detail.instrumentName}</Modal.Title>
-                    </div>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <Form className="flex flex-col gap-3">
-                      {questions.length ?
-                        questions.map((e: any, i: Key) => {
-                          return renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted)
-                        }) : null
-                      }
-                    </Form>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    {detail.questions > 0 && !!detail.isCompleted ? null :
-                      <>
-                        <Button variant="secondary" onClick={handleCloseQuestion}>
-                          Tutup
-                        </Button>
-                        <Button variant="primary" onClick={handleSubmit}>
-                          Simpan
-                        </Button>
-                      </>
+            <div className="flex flex-wrap gap-4">
+              {e.criteria.map((detail: any, idx: Key) => {
+                return <div className="card shadow col-6 col-sm-3" key={idx}>
+                  <div className="card-header">
+                    <h6 className="m-0 font-weight-bold text-primary">Tabel {+i + 1}{e.criteria.length > 1 ? `.${+idx + 1}` : ''}</h6>
+                  </div>
+                  <div className="card-body mt-2 text-dark">
+                    <h6>{detail.instrumentName}</h6>
+                    {detail.questions > 0 &&
+                      <a
+                        data-toggle="modal"
+                        data-target="#tabel1Modal"
+                        className="btn btn-primary btn-icon-split"
+                        onClick={() => handleOpenQuestion(detail.id)}
+                        style={{
+                          backgroundColor: detail.questions > 0 && !!detail.isCompleted ? '#C5D3E0' : '#0C6DFD',
+                          color: detail.questions > 0 && !!detail.isCompleted ? 'black' : 'white',
+                        }}
+                      >
+                        <span className="text">{detail.questions > 0 && !!detail.isCompleted ? 'Sudah di isi' : 'Isi Survei'}</span>
+                      </a>
                     }
-                  </Modal.Footer>
-                </Modal>
-              </div>
-            })}
+                  </div>
+                  <Modal show={openQuestion && activeQuestion == detail.id} onHide={handleCloseQuestion}>
+                    <Modal.Header closeButton>
+                      <div>
+                        <Modal.Title>Tabel {+i + 1}{e.criteria.length > 1 ? `.${+idx + 1}` : ''}</Modal.Title>
+                        <Modal.Title>{detail.instrumentName}</Modal.Title>
+                      </div>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <Form className="flex flex-col gap-3">
+                        {questions.length ?
+                          questions.map((e: any, i: Key) => {
+                            return renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted)
+                          }) : null
+                        }
+                      </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      {detail.questions > 0 && !!detail.isCompleted ? null :
+                        <>
+                          <Button variant="secondary" onClick={handleCloseQuestion}>
+                            Tutup
+                          </Button>
+                          <Button variant="primary" onClick={handleSubmit}>
+                            Simpan
+                          </Button>
+                        </>
+                      }
+                    </Modal.Footer>
+                  </Modal>
+                </div>
+              })}
+            </div>
           </div>
-        </div>
-      })}
-      <Modal show={showSuccess} onHide={() => setSuccess(false)}>
-        <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
-          Success Submit
-        </Modal.Body>
-      </Modal>
-    </div>
+        })}
+        <Modal show={showSuccess} onHide={() => setSuccess(false)}>
+          <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
+            Success Submit
+          </Modal.Body>
+        </Modal>
+      </div>
+    </>
   )
 }
 

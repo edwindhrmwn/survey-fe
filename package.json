@@ -1,11 +1,20 @@
 {
-  "name": "ataks",
+  "name": "raps",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "files": ["dist"],
+  "main": "./dist/raps.umd.cjs",
+  "module": "./dist/raps.js",
+  "exports": {
+    ".": {
+      "import": "./dist/raps.js",
+      "require": "./dist/raps.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {

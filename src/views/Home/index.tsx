@@ -276,7 +276,7 @@ const Home = () => {
           defaultSelectedKeys={[activeMenu]}
           items={[
             {
-              key: 'logout',
+              key: '',
               icon: <UserOutlined />,
               label: sessionStorage.getItem('username'),
             },

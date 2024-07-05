@@ -34,8 +34,7 @@ const SurverHistory = () => {
       title: 'Progress',
       dataIndex: 'questions',
       key: 'questions',
-      render: (detail: any, data: any) => {
-        console.log(data, detail)
+      render: (_: any, data: any) => {
         if (+data.questions == 0) return null
 
         const now = +data.answers / +data.questions * 100
@@ -50,6 +49,9 @@ const SurverHistory = () => {
 
   return (
     <>
+      <div className="w-full flex justify-between mb-2">
+        <div className="text-xl mb-2"><b>Riwayat Status Survey</b></div>
+      </div>
       <Table
         columns={columns}
         dataSource={instrumentQuestion}
