@@ -10,11 +10,11 @@ import store from './store';
 import Router from './routes';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <Router />
       </BrowserRouter>
     </Provider>
-  </React.StrictMode>,
+  // </React.StrictMode>,
 )

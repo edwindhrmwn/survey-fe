@@ -18,6 +18,7 @@ import Modal from 'react-bootstrap/Modal';
 import useHome from "./useHome"
 import RegisterForm from "../../components/RegisterForm";
 import UserDashboard from "./user.dashboard"
+import AdminDashboard from "./admin.dashboard"
 import Instrument from "./admin.instrument";
 import Category from "./admin.category"
 import UserHistory from "./survey.history"
@@ -157,6 +158,9 @@ const Home = () => {
 
   const renderBody = (key: string) => {
     switch (key) {
+      case 'Dashboard':
+        return <AdminDashboard />
+
       case 'Kelola Akun':
         return <>
           <div className="w-full flex justify-between mb-2">
@@ -216,6 +220,7 @@ const Home = () => {
             columns={columns}
           />
         </>
+
       case 'register':
         return <RegisterForm
           role={role}
@@ -230,6 +235,7 @@ const Home = () => {
           setPassword={setPassword}
           handleRegister={handleRegister}
         />
+
       case 'Dashboard User':
         return <UserDashboard />
 
@@ -244,7 +250,7 @@ const Home = () => {
 
       default:
         if (sessionStorage.getItem('role')?.toLocaleLowerCase() != 'admin') return <UserDashboard />
-        return "Welcome"
+        return <AdminDashboard />
     }
   }
 

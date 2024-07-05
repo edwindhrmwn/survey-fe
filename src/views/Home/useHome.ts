@@ -152,6 +152,21 @@ const useHome = () => {
     }
   }
 
+  const handleGetCategoryCriteriaAdmin = async () => {
+    try {
+      setIsLoading(true)
+      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/category-instrument', {})
+
+      setCategoryCriteria(data.data)
+      setIsLoading(false)
+    } catch (error: any) {
+      setErrors(error.response.data.message)
+      setIsLoading(false)
+
+      return { status: false, message: error.response.data.message }
+    }
+  }
+
   const handleGetInstrument = async () => {
     try {
       setIsLoading(true)
@@ -352,6 +367,7 @@ const useHome = () => {
       handleSubmitAnswer,
       handleGetQuestionByInstrument,
       handleGetInstrumentQuestion,
+      handleGetCategoryCriteriaAdmin,
     }
   }
 }
