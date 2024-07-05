@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 const useOnboard = () => {
   const [email, setEmail] = useState('')
   const [errors, setErrors] = useState([])
+  const [error, setError] = useState('')
   const [role, setRole] = useState('STAFF')
   const [isShow, setIsShow] = useState(false)
   const [password, setPassword] = useState('')
@@ -28,7 +29,7 @@ const useOnboard = () => {
     e.preventDefault()
     try {
       const { data } = await axios.post(import.meta.env.VITE_BE_BASE_URL + '/user/login', {
-        email, password
+        username: email, password
       })
 
       dispatch(login({ id: data.data.userLogin.id, email, access_token: data.data.token, role: data.data.role }))
@@ -36,13 +37,16 @@ const useOnboard = () => {
       sessionStorage.setItem('access_token', data.data.token)
       sessionStorage.setItem('email', email)
       sessionStorage.setItem('role', data.data.role)
+      sessionStorage.setItem('username', data.data.userLogin.username)
       sessionStorage.setItem('userId', data.data.userLogin.id)
 
       resetValue()
       navigateTo('/')
     } catch (error: any) {
-      setErrors(error.response.data.messages)
-      console.log(error)
+      setError(error.response.data.message)
+      console.log(error.response.data.message)
+      return false
+      // setErrors(error.response.data.message)
     }
   }
 
@@ -50,6 +54,7 @@ const useOnboard = () => {
     state: {
       role,
       email,
+      error,
       errors,
       isShow,
       isLogin,

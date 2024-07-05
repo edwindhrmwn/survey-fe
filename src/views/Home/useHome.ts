@@ -23,6 +23,7 @@ const useHome = () => {
   const [activeMenu, setActiveMenu] = useState('dashbord')
   const [successMessage, setSuccessMessage] = useState('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [instrumentQuestion, setInstrumentQuestion] = useState([])
 
   const [questions, setQuestion] = useState([])
 
@@ -139,7 +140,7 @@ const useHome = () => {
   const handleGetCategoryCriteria = async () => {
     try {
       setIsLoading(true)
-      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/category-instrument', {})
+      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/category-instrument-by-user/' + sessionStorage.getItem('userId'), {})
 
       setCategoryCriteria(data.data)
       setIsLoading(false)
@@ -260,7 +261,7 @@ const useHome = () => {
       setIsLoading(true)
       setQuestion([])
 
-      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/question/' + id, {})
+      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/question/' + id + '?userId=' + sessionStorage.getItem('userId'), {})
 
       setQuestion(data.data)
       setIsLoading(false)
@@ -289,6 +290,23 @@ const useHome = () => {
     }
   }
 
+  const handleGetInstrumentQuestion = async () => {
+    try {
+      setIsLoading(true)
+      // setQuestion([])
+
+      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/instrument-question/' + sessionStorage.getItem('userId'), {})
+
+      setInstrumentQuestion(data.data)
+      setIsLoading(false)
+    } catch (error: any) {
+      setErrors(error.response.data.message)
+      setIsLoading(false)
+
+      return { status: false, message: error.response.data.message }
+    }
+  }
+
   return {
     state: {
       role,
@@ -308,6 +326,7 @@ const useHome = () => {
       instrument,
       category,
       questions,
+      instrumentQuestion,
     },
     methods: {
       setRole,
@@ -332,6 +351,7 @@ const useHome = () => {
       handleDeleteCategory,
       handleSubmitAnswer,
       handleGetQuestionByInstrument,
+      handleGetInstrumentQuestion,
     }
   }
 }

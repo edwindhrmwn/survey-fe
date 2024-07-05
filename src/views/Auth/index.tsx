@@ -5,6 +5,7 @@ const OnBoarding = () => {
   const {
     state: {
       email,
+      error,
       errors,
       isShow,
       password,
@@ -22,6 +23,7 @@ const OnBoarding = () => {
   return (
     <div className="h-screen w-screen flex bg-[#DEDEDE] p-4 justify-center items-center">
       <LoginForm
+        error={error}
         email={email}
         isShow={isShow}
         errors={errors}

@@ -20,6 +20,8 @@ import RegisterForm from "../../components/RegisterForm";
 import UserDashboard from "./user.dashboard"
 import Instrument from "./admin.instrument";
 import Category from "./admin.category"
+import UserHistory from "./survey.history"
+import Unj from "../../assets/Logo UNJ.png"
 
 const Home = () => {
   const navigateTo = useNavigate()
@@ -143,8 +145,13 @@ const Home = () => {
   const staff = [
     {
       key: 'Dashboard User',
-      icon: <UserOutlined />,
+      icon: <HomeOutlined />,
       label: 'Dashboard',
+    },
+    {
+      key: 'Riwayat Survey',
+      icon: <CheckSquareOutlined />,
+      label: 'Riwayat Survey',
     },
   ]
 
@@ -226,6 +233,9 @@ const Home = () => {
       case 'Dashboard User':
         return <UserDashboard />
 
+      case 'Riwayat Survey':
+        return <UserHistory />
+
       case 'Kelola Kriteria':
         return <Category />
 
@@ -265,6 +275,11 @@ const Home = () => {
           }}
           defaultSelectedKeys={[activeMenu]}
           items={[
+            {
+              key: 'logout',
+              icon: <UserOutlined />,
+              label: sessionStorage.getItem('username'),
+            },
             ...menus,
             {
               key: 'logout',
@@ -275,11 +290,18 @@ const Home = () => {
         />
       </Sider>
       <Layout className="site-layout">
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-            className: 'trigger',
-            onClick: () => setCollapsed(!collapsed),
-          })}
+        <Header style={{ padding: 0, background: colorBgContainer, height: 80 }}>
+          <div className="flex gap-3 items-center h-[80px]">
+            {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+              className: 'trigger',
+              onClick: () => setCollapsed(!collapsed),
+            })}
+
+            <img src={Unj} alt="Unj Logo" style={{ width: 40 }} />
+            <span className="ml-5 text-2xl font-bold">
+              Repository Akreditasi Prodi
+            </span>
+          </div>
         </Header>
         <Content
           style={{
