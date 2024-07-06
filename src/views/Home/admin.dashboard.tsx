@@ -58,7 +58,7 @@ const AdminDashboard = () => {
     await handleGetUserByInstrument(id)
   }
 
-  const handlOnChange = (data: any, answer: any) => {
+  const handlOnChange = (data: any, answer: any, additionalAnswer?: any) => {
     const rs: any = []
     for (const question of questions) {
       const detail: any = question
@@ -68,6 +68,7 @@ const AdminDashboard = () => {
           questionId: detail.id,
           userId: activeUser,
           answer: answer,
+          additionalAnswer,
           instrumentId: detail.instrumentId,
         })
       } else {
@@ -142,27 +143,22 @@ const AdminDashboard = () => {
       case 'options':
         return (
           <>
+            <div className="flex justify-between w-full">
             <span>{data.question}</span>
-            <div className="flex justify-between">
               <div className="flex flex-col">
-                <Input value={1} disabled={isDisable} checked={+data.answer == 1} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-                <span>1</span>
+                <Input value={"Sangat Baik"} disabled={isDisable} checked={data.answer == "Sangat Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
               </div>
               <div className="flex flex-col">
-                <Input value={2} disabled={isDisable} checked={+data.answer == 2} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-                <span>2</span>
+                <Input value={"Baik"} disabled={isDisable} checked={data.answer == "Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
               </div>
               <div className="flex flex-col">
-                <Input value={3} disabled={isDisable} checked={+data.answer == 3} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-                <span>3</span>
+                <Input value={"Cukup"} disabled={isDisable} checked={data.answer == "Cukup"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
               </div>
               <div className="flex flex-col">
-                <Input value={4} disabled={isDisable} checked={+data.answer == 4} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-                <span>4</span>
+                <Input value={"Kurang"} disabled={isDisable} checked={data.answer == "Kurang"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
               </div>
               <div className="flex flex-col">
-                <Input value={5} disabled={isDisable} checked={+data.answer == 5} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-                <span>5</span>
+                <Input value={data.additionalAnswer} disabled={isDisable} className="form-check-input" onChange={(e) => handlOnChange(data, e.target.value)} />
               </div>
             </div>
           </>
@@ -176,6 +172,40 @@ const AdminDashboard = () => {
               <option value={"TS-2"}>TS-2</option>
               <option value={"TS-3"}>TS-3</option>
               <option value={"TS-4"}>TS-4</option>
+            </select>
+          </div>
+        )
+      case 'lov tahun lulus': // TS-2, TS-1, TS
+        return (
+          <div className="flex flex-col w-full">
+            <div>{data.question}</div>
+            <select disabled={isDisable} value={data.answer} onChange={(e) => handlOnChange(data, e.target.value)}>
+              <option value={"TS-2"}>TS-2</option>
+              <option value={"TS-1"}>TS-1</option>
+              <option value={"TS"}>TS</option>
+            </select>
+          </div>
+        )
+      case 'lov tahun lulus 2': // TS-4, TS-3, TS-2
+        return (
+          <div className="flex flex-col w-full">
+            <div>{data.question}</div>
+            <select disabled={isDisable} value={data.answer} onChange={(e) => handlOnChange(data, e.target.value)}>
+              <option value={"TS-4"}>TS-4</option>
+              <option value={"TS-3"}>TS-3</option>
+              <option value={"TS-2"}>TS-2</option>
+            </select>
+          </div>
+        )
+      case 'lov tahun masuk': // TS-6. TS-5, TS-4, TS-3
+        return (
+          <div className="flex flex-col w-full">
+            <div>{data.question}</div>
+            <select disabled={isDisable} value={data.answer} onChange={(e) => handlOnChange(data, e.target.value)}>
+              <option value={"TS-6"}>TS-6</option>
+              <option value={"TS-5"}>TS-5</option>
+              <option value={"TS-4"}>TS-4</option>
+              <option value={"TS-3"}>TS-3</option>
             </select>
           </div>
         )
