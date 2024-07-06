@@ -169,16 +169,16 @@ const AdminDashboard = () => {
               <span className="flex flex-wrap" style={{ width: 150 }}>{data.question}</span>
               <>
                 <div className="flex flex-col">
-                  <Input value={"Sangat Baik"} disabled={isDisable} checked={data.answer == "Sangat Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                  <Input value={"Sangat Baik"} disabled={isDisable} checked={data.answer == "Sangat Baik"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
                 </div>
                 <div className="flex flex-col">
-                  <Input value={"Baik"} disabled={isDisable} checked={data.answer == "Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                  <Input value={"Baik"} disabled={isDisable} checked={data.answer == "Baik"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
                 </div>
                 <div className="flex flex-col">
-                  <Input value={"Cukup"} disabled={isDisable} checked={data.answer == "Cukup"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                  <Input value={"Cukup"} disabled={isDisable} checked={data.answer == "Cukup"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
                 </div>
                 <div className="flex flex-col">
-                  <Input value={"Kurang"} disabled={isDisable} checked={data.answer == "Kurang"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                  <Input value={"Kurang"} disabled={isDisable} checked={data.answer == "Kurang"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
                 </div>
               </>
               <Input
