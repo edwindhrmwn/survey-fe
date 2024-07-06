@@ -293,7 +293,7 @@ const Home = () => {
 
   return (
     <Layout className="h-screen">
-      <Sider trigger={null} collapsible collapsed={collapsed} className='p-1' >
+      <Sider trigger={null} collapsible collapsed={collapsed} className='pt-[80px] px-1' >
         <Menu
           theme="dark"
           mode="inline"
@@ -306,11 +306,11 @@ const Home = () => {
           }}
           defaultSelectedKeys={sessionStorage.getItem('role') === 'ADMIN' ? [activeMenu] : ['Dashboard User']}
           items={[
-            {
-              key: sessionStorage.getItem('username'),
-              icon: <UserOutlined />,
-              label: sessionStorage.getItem('username'),
-            },
+            // {
+            //   key: sessionStorage.getItem('username'),
+            //   icon: <UserOutlined />,
+            //   label: sessionStorage.getItem('username'),
+            // },
             ...menus,
             {
               key: 'logout',
@@ -322,16 +322,23 @@ const Home = () => {
       </Sider>
       <Layout className="site-layout">
         <Header style={{ padding: 0, background: colorBgContainer, height: 80 }}>
-          <div className="flex gap-3 items-center h-[80px]">
-            {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-              className: 'trigger',
-              onClick: () => setCollapsed(!collapsed),
-            })}
+          <div className="flex justify-between">
+            <div className="flex gap-3 items-center h-[80px]">
+              {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+                className: 'trigger',
+                onClick: () => setCollapsed(!collapsed),
+              })}
 
-            <img src={Unj} alt="Unj Logo" style={{ width: 40 }} />
-            <span className="ml-5 text-2xl font-bold">
-              Repository Akreditasi Prodi
-            </span>
+              <img src={Unj} alt="Unj Logo" style={{ width: 40 }} />
+              <span className="ml-5 text-2xl font-bold">
+                Repository Akreditasi Prodi
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 pr-6">
+              <UserOutlined className="flex items-center" style={{ width: 30, height: 30 }} width={30} />
+              <span style={{ fontSize: 20 }}>{sessionStorage.getItem("username")}</span>
+            </div>
           </div>
         </Header>
         <Content

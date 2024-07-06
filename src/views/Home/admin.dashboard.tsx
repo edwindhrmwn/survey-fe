@@ -213,7 +213,7 @@ const AdminDashboard = () => {
     setShowDeleteConfirm(false)
   }
 
-  const exportCSV = async () => {
+  const exportCSV = async (id: number | null) => {
     // @ts-ignore
     const rawHeader = [{ No: 0, ...printData[0] }].map(Object.keys)
     const header = rawHeader[0].map(o => { return { v: o } })
@@ -221,6 +221,19 @@ const AdminDashboard = () => {
 
     for (let i = 0; i < printData.length; i++) {
       const o = printData[i];
+      console.log(o['User Id'], id)
+      if (id) {
+        if (o['User Id'] == id) body.push([
+          { v: i + 1 },
+          { v: o['Nama Instrument'] },
+          { v: o['User Id'] },
+          { v: o['Nama Responden'] },
+          { v: o['Pertanyaan'] },
+          { v: o['Jawaban'] },
+        ])
+        continue
+      }
+      console.log("hereeee")
       body.push([
         { v: i + 1 },
         { v: o['Nama Instrument'] },
@@ -235,12 +248,18 @@ const AdminDashboard = () => {
     const workBook = XLSX.utils.book_new(); // create a new blank book
     const workSheet = XLSX.utils.aoa_to_sheet(data, {});
 
+    let fileName = `REPORT RESPONDEN ${instrumentName}-${dayjs(new Date()).format("DD-MM-YYYY")}.xlsx`
+
+    if (id) {
+      fileName = `REPORT RESPONDEN ${username} - ${instrumentName}-${dayjs(new Date()).format("DD-MM-YYYY")}.xlsx`
+    }
+
     // ! Auto
     workSheet['!cols'] = ExcelfitToColumn(data, true);
     XLSX.utils.book_append_sheet(workBook, workSheet, "Sheet1")
     XLSX.writeFile(
       workBook,
-      `REPORT RESPONDEN ${instrumentName}-${dayjs(new Date()).format("DD-MM-YYYY")}.xlsx`
+      fileName
     );
   }
 
@@ -285,11 +304,6 @@ const AdminDashboard = () => {
                 setOpenQuestion(true)
                 handleGetQuestionByInstrument(instrumentId, data.userId)
                 setActiveUser(data.userId)
-                // setInstrumentId()
-                // setIsEdit(true)
-                // setCategoryEdit(data.categoryName)
-                // setCategoryCodeEdit(data.categoryCode)
-                // setCategoryIdEdit(data.id)
               }}
             >
               <EditOutlined />
@@ -297,15 +311,22 @@ const AdminDashboard = () => {
             <span
               style={{ cursor: 'pointer', color: 'red' }}
               onClick={() => {
-                // setCategoryIdEdit(data.id)
-                // setCategoryEdit(data.categoryName)
-                // setCategoryCodeEdit(data.categoryCode)
                 setActiveUser(data.userId)
                 setActiveUserName(data.username)
                 setShowDeleteConfirm(true)
               }}
             >
               <DeleteOutlined />
+            </span>
+            <span
+              style={{ cursor: 'pointer', color: 'blue' }}
+              onClick={() => {
+                exportCSV(data.userId)
+                setActiveUser(data.userId)
+                setActiveUserName(data.username)
+              }}
+            >
+              <PrinterOutlined />
             </span>
           </div>
         }
@@ -328,7 +349,7 @@ const AdminDashboard = () => {
           <div
             className="flex gap-1 p-2 rounded cursor-pointer bg-[#0C6DFD] hover:bg-[#2b60ae]"
             style={{ color: 'white' }}
-            onClick={() => exportCSV()}
+            onClick={() => exportCSV(null)}
           >
             <PrinterOutlined style={{ width: 40 }} className="flex items-center" />
             <div className="flex w-full">Export to Excel</div>
