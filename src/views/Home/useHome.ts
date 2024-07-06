@@ -294,11 +294,9 @@ const useHome = () => {
   const handleSubmitAnswer = async (dataParam: any) => {
     try {
       setIsLoading(true)
-      // setQuestion([])
 
       await axios.post(import.meta.env.VITE_BE_BASE_URL + '/answer', { data: dataParam })
 
-      // setQuestion(data.data)
       setIsLoading(false)
     } catch (error: any) {
       setErrors(error.response.data.message)
@@ -326,7 +324,6 @@ const useHome = () => {
   const handleGetInstrumentQuestion = async () => {
     try {
       setIsLoading(true)
-      // setQuestion([])
 
       const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/instrument-question/' + sessionStorage.getItem('userId'), {})
 

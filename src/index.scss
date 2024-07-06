@@ -13,6 +13,14 @@
   animation: spin 1s linear infinite;
 }
 
+.modal-content {
+  width: 800px !important;
+}
+
+.modal-dialog {
+  max-width: 800px !important;
+}
+
 .loader-large {
   border: 2px solid #f3f3f3; /* Light grey */
   border-top: 2px solid #3498db; /* Blue */

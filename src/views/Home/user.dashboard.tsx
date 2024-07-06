@@ -44,6 +44,7 @@ const UserDashboard = () => {
 
   const handlOnChange = (data: any, answer: any, additionalAnswer?: any) => {
     const rs: any = []
+    console.log(data, answer, additionalAnswer)
     for (const question of questions) {
       const detail: any = question
       if (detail?.id == data.id) {
@@ -51,14 +52,21 @@ const UserDashboard = () => {
           ...detail,
           questionId: detail.id,
           userId: sessionStorage.getItem('userId'),
-          answer: answer,
+          answer,
           additionalAnswer,
           instrumentId: detail.instrumentId,
         })
       } else {
-        rs.push(detail)
+        rs.push({
+          ...detail,
+          questionId: detail.id,
+          userId: sessionStorage.getItem('userId'),
+          instrumentId: detail.instrumentId,
+        })
       }
     }
+
+    console.log(rs)
 
     setQuestion(rs)
   }
@@ -81,7 +89,7 @@ const UserDashboard = () => {
     handlOnChange(data, url)
   }
 
-  const renderQuestion = (type: string, data: any, isDisable: boolean) => {
+  const renderQuestion = (type: string, data: any, isDisable: boolean, idx: number) => {
     switch (type) {
       case 'upload':
         if (data.answer && !data.notSubmitYet) {
@@ -115,23 +123,50 @@ const UserDashboard = () => {
       case 'options':
         return (
           <>
-            <div className="flex justify-between w-full">
-              <span>{data.question}</span>
-              <div className="flex flex-col">
-                <Input value={"Sangat Baik"} disabled={isDisable} checked={data.answer == "Sangat Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
+            {idx == 0 &&
+              <div className="flex justify-between border-b-2">
+                <span className="flex flex-wrap" style={{ width: 150 }}>Jenis Kemampuan</span>
+                <>
+                  <div className="flex flex-col">
+                    Sangat Baik
+                  </div>
+                  <div className="flex flex-col">
+                    Baik
+                  </div>
+                  <div className="flex flex-col">
+                    Cukup
+                  </div>
+                  <div className="flex flex-col">
+                    Kurang
+                  </div>
+                </>
+                <div style={{ width: 200 }}>
+                  Rencana Tindak Lanjut oleh UPPS/PS
+                </div>
               </div>
-              <div className="flex flex-col">
-                <Input value={"Baik"} disabled={isDisable} checked={data.answer == "Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
-              <div className="flex flex-col">
-                <Input value={"Cukup"} disabled={isDisable} checked={data.answer == "Cukup"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
-              <div className="flex flex-col">
-                <Input value={"Kurang"} disabled={isDisable} checked={data.answer == "Kurang"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
-              <div className="flex flex-col">
-                <Input value={data.additionalAnswer} disabled={isDisable} className="form-check-input" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
+            }
+            <div className="flex justify-between">
+              <span className="flex flex-wrap" style={{ width: 150 }}>{data.question}</span>
+              <>
+                <div className="flex flex-col">
+                  <Input value={"Sangat Baik"} disabled={isDisable} checked={data.answer == "Sangat Baik"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+                <div className="flex flex-col">
+                  <Input value={"Baik"} disabled={isDisable} checked={data.answer == "Baik"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+                <div className="flex flex-col">
+                  <Input value={"Cukup"} disabled={isDisable} checked={data.answer == "Cukup"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+                <div className="flex flex-col">
+                  <Input value={"Kurang"} disabled={isDisable} checked={data.answer == "Kurang"} className="form-check-input" type="radio" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+              </>
+              <Input
+                value={data.additionalAnswer}
+                disabled={isDisable}
+                onChange={(e) => handlOnChange(data, data.answer, e.target.value)}
+                style={{ width: 200 }}
+              />
             </div>
           </>
         )
@@ -253,7 +288,7 @@ const UserDashboard = () => {
                       </a>
                     }
                   </div>
-                  <Modal show={openQuestion && activeQuestion == detail.id} onHide={handleCloseQuestion}>
+                  <Modal show={openQuestion && activeQuestion == detail.id} onHide={handleCloseQuestion} style={{ minWidth: 600 }}>
                     <Modal.Header closeButton>
                       <div>
                         <Modal.Title>Tabel {+i + 1}{e.criteria.length > 1 ? `.${+idx + 1}` : ''}</Modal.Title>
@@ -264,7 +299,7 @@ const UserDashboard = () => {
                       <Form className="flex flex-col w-full gap-3">
                         {questions.length ?
                           questions.map((e: any, i: Key) => {
-                            return renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted)
+                            return renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted, +i)
                           }) : null
                         }
                       </Form>

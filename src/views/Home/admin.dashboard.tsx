@@ -106,7 +106,7 @@ const AdminDashboard = () => {
     handlOnChange(data, url)
   }
 
-  const renderQuestion = (type: string, data: any, isDisable: boolean) => {
+  const renderQuestion = (type: string, data: any, isDisable: boolean, idx: number) => {
     switch (type) {
       case 'upload':
         if (data.answer) {
@@ -143,23 +143,50 @@ const AdminDashboard = () => {
       case 'options':
         return (
           <>
-            <div className="flex justify-between w-full">
-            <span>{data.question}</span>
-              <div className="flex flex-col">
-                <Input value={"Sangat Baik"} disabled={isDisable} checked={data.answer == "Sangat Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
+            {idx == 0 &&
+              <div className="flex justify-between border-b-2">
+                <span className="flex flex-wrap" style={{ width: 150 }}>Jenis Kemampuan</span>
+                <>
+                  <div className="flex flex-col">
+                    Sangat Baik
+                  </div>
+                  <div className="flex flex-col">
+                    Baik
+                  </div>
+                  <div className="flex flex-col">
+                    Cukup
+                  </div>
+                  <div className="flex flex-col">
+                    Kurang
+                  </div>
+                </>
+                <div style={{ width: 200 }}>
+                  Rencana Tindak Lanjut oleh UPPS/PS
+                </div>
               </div>
-              <div className="flex flex-col">
-                <Input value={"Baik"} disabled={isDisable} checked={data.answer == "Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
-              <div className="flex flex-col">
-                <Input value={"Cukup"} disabled={isDisable} checked={data.answer == "Cukup"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
-              <div className="flex flex-col">
-                <Input value={"Kurang"} disabled={isDisable} checked={data.answer == "Kurang"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
-              <div className="flex flex-col">
-                <Input value={data.additionalAnswer} disabled={isDisable} className="form-check-input" onChange={(e) => handlOnChange(data, e.target.value)} />
-              </div>
+            }
+            <div className="flex justify-between">
+              <span className="flex flex-wrap" style={{ width: 150 }}>{data.question}</span>
+              <>
+                <div className="flex flex-col">
+                  <Input value={"Sangat Baik"} disabled={isDisable} checked={data.answer == "Sangat Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+                <div className="flex flex-col">
+                  <Input value={"Baik"} disabled={isDisable} checked={data.answer == "Baik"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+                <div className="flex flex-col">
+                  <Input value={"Cukup"} disabled={isDisable} checked={data.answer == "Cukup"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+                <div className="flex flex-col">
+                  <Input value={"Kurang"} disabled={isDisable} checked={data.answer == "Kurang"} className="form-check-input" type="radio" name="flexRadioDefault" onChange={(e) => handlOnChange(data, e.target.value, data.additionalAnswer)} />
+                </div>
+              </>
+              <Input
+                value={data.additionalAnswer}
+                disabled={isDisable}
+                onChange={(e) => handlOnChange(data, data.answer, e.target.value)}
+                style={{ width: 200 }}
+              />
             </div>
           </>
         )
@@ -401,7 +428,7 @@ const AdminDashboard = () => {
             <Form className="flex flex-col gap-3">
               {questions.length ?
                 questions.map((e: any, i: Key) => {
-                  return renderQuestion(e.questionType, e, false)
+                  return renderQuestion(e.questionType, e, false, +i)
                 }) : null
               }
             </Form>
