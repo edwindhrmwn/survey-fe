@@ -20,12 +20,14 @@ const useHome = () => {
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<string[]>([])
   const [collapsed, setCollapsed] = useState(false);
-  const [activeMenu, setActiveMenu] = useState('dashbord')
+  const [activeMenu, setActiveMenu] = useState('Dashboard')
   const [successMessage, setSuccessMessage] = useState('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [instrumentQuestion, setInstrumentQuestion] = useState([])
-
+  const [responden, setResponden] = useState([])
+  const [printData, setDataPrint] = useState([])
   const [questions, setQuestion] = useState([])
+  const [basedQuestions, setBasedQuestions] = useState([])
 
   const user = useSelector((state: any) => state.user);
 
@@ -105,10 +107,10 @@ const useHome = () => {
     }
   }
 
-  const handleCreateAccount = async (username: string, email: string, password: string) => {
+  const handleCreateAccount = async (username: string, email: string, password: string, role: string) => {
     try {
-      const { data } = await axios.post(import.meta.env.VITE_BE_BASE_URL + '/user/register', { username, email, password })
-      // setAbsents(data.data)
+      const { data } = await axios.post(import.meta.env.VITE_BE_BASE_URL + '/user/register', { username, email, password, role })
+
       await getUsers()
       setIsLoading(false)
 
@@ -271,14 +273,15 @@ const useHome = () => {
     }
   }
 
-  const handleGetQuestionByInstrument = async (id: number) => {
+  const handleGetQuestionByInstrument = async (id: number, userId: number | string) => {
     try {
       setIsLoading(true)
       setQuestion([])
 
-      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/question/' + id + '?userId=' + sessionStorage.getItem('userId'), {})
+      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/question/' + id + '?userId=' + userId, {})
 
       setQuestion(data.data)
+      setBasedQuestions(data.data)
       setIsLoading(false)
     } catch (error: any) {
       setErrors(error.response.data.message)
@@ -305,6 +308,21 @@ const useHome = () => {
     }
   }
 
+  const handleDeleteUserAnswer = async (userId: any, instrumentId: any) => {
+    try {
+      setIsLoading(true)
+
+      await axios.post(import.meta.env.VITE_BE_BASE_URL + '/delete-user-answer', { userId, instrumentId })
+
+      setIsLoading(false)
+    } catch (error: any) {
+      setErrors(error.response.data.message)
+      setIsLoading(false)
+
+      return { status: false, message: error.response.data.message }
+    }
+  }
+
   const handleGetInstrumentQuestion = async () => {
     try {
       setIsLoading(true)
@@ -313,6 +331,23 @@ const useHome = () => {
       const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/instrument-question/' + sessionStorage.getItem('userId'), {})
 
       setInstrumentQuestion(data.data)
+      setIsLoading(false)
+    } catch (error: any) {
+      setErrors(error.response.data.message)
+      setIsLoading(false)
+
+      return { status: false, message: error.response.data.message }
+    }
+  }
+
+  const handleGetUserByInstrument = async (id: number) => {
+    try {
+      setIsLoading(true)
+
+      const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/user-by-instrument/' + id, {})
+
+      setResponden(data.data.data)
+      setDataPrint(data.data.print)
       setIsLoading(false)
     } catch (error: any) {
       setErrors(error.response.data.message)
@@ -341,7 +376,10 @@ const useHome = () => {
       instrument,
       category,
       questions,
+      basedQuestions,
       instrumentQuestion,
+      responden,
+      printData,
     },
     methods: {
       setRole,
@@ -368,6 +406,8 @@ const useHome = () => {
       handleGetQuestionByInstrument,
       handleGetInstrumentQuestion,
       handleGetCategoryCriteriaAdmin,
+      handleGetUserByInstrument,
+      handleDeleteUserAnswer,
     }
   }
 }

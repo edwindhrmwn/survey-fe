@@ -21,7 +21,7 @@ const OnBoarding = () => {
 
 
   return (
-    <div className="h-screen w-screen flex bg-[#DEDEDE] p-4 justify-center items-center">
+    <div className="h-screen w-screen flex bg-[#001628] p-4 justify-center items-center">
       <LoginForm
         error={error}
         email={email}

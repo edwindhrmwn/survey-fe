@@ -34,7 +34,7 @@ const UserDashboard = () => {
   const handleOpenQuestion = (id: number) => {
     setOpenQuestion(true)
     setActiveQuestion(id)
-    handleGetQuestionByInstrument(id)
+    handleGetQuestionByInstrument(id, sessionStorage.getItem('userId') || '')
   }
 
   const handleCloseQuestion = () => {
@@ -42,7 +42,7 @@ const UserDashboard = () => {
     setActiveQuestion(0)
   }
 
-  const handlOnChange = (data: any, answer: any) => {
+  const handlOnChange = (data: any, answer: any, notSubmitYet: Boolean = true) => {
     const rs: any = []
     for (const question of questions) {
       const detail: any = question
@@ -53,6 +53,7 @@ const UserDashboard = () => {
           userId: sessionStorage.getItem('userId'),
           answer: answer,
           instrumentId: detail.instrumentId,
+          notSubmitYet,
         })
       } else {
         rs.push(detail)
@@ -74,7 +75,7 @@ const UserDashboard = () => {
   }
 
   const handleUploadFile = async (data: any, file: any) => {
-    const imageRef = ref(storage, `files/${file.name}-` + Math.random().toString())
+    const imageRef = ref(storage, `files/${Math.random().toString()}-${file.name}`)
     const firebaseData = await uploadBytes(imageRef, file)
     const url = await getDownloadURL(firebaseData.ref)
     handlOnChange(data, url)
@@ -83,7 +84,7 @@ const UserDashboard = () => {
   const renderQuestion = (type: string, data: any, isDisable: boolean) => {
     switch (type) {
       case 'upload':
-        if (data.answer) {
+        if (data.answer && !data.notSubmitYet) {
           return <div>
             Berkas
             <div className="input-group mb-3">

@@ -31,7 +31,7 @@ const LoginForm = (props: IProps) => {
   } = props
 
   return (
-    <section className="flex items-center justify-center flex-col gap-3 min-w-[400px] w-[40vw] bg-white p-8 rounded" style={{ minHeight: '50vh' }}>
+    <section className="flex items-center justify-center flex-col gap-3 min-w-[400px] w-[40vw] bg-[white] p-8 rounded" style={{ minHeight: '50vh' }}>
       <img src={Unj} style={{ width: 60 }} />
       <span className="text-xl font-bold">MASUK</span>
 
@@ -79,7 +79,7 @@ const LoginForm = (props: IProps) => {
 
       <div className='flex w-full justify-end'>
         <div
-          className="flex justify-center p-2 w-[120px] rounded cursor-pointer bg-[#D9D9D9] hover:bg-[#DEDEDE]"
+          className="flex justify-center p-2 w-[120px] rounded text-white cursor-pointer bg-[#1677FF] hover:bg-[#4793ff]"
           onClick={(e: any) => handleLogin(e)}
         >
           LOGIN

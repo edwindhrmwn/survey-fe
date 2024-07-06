@@ -37,7 +37,7 @@ const SurverHistory = () => {
       render: (_: any, data: any) => {
         if (+data.questions == 0) return null
 
-        const now = +data.answers / +data.questions * 100
+        const now = Math.round(+data.answers / +data.questions * 100)
         return <ProgressBar now={now} label={`${now}%`} />
       }
     },

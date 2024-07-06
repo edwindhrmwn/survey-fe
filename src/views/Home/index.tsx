@@ -61,16 +61,18 @@ const Home = () => {
   const [username, setUsername] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [userPassword, setUserPassword] = useState('')
+  const [userRole, setUserRole] = useState('')
   const [errorRegisMessage, setErrorRegis] = useState('')
 
   const [userDelete, setUserDelete] = useState(0)
+  const [usernameDelete, setUseranmeDelete] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleSubmit = async () => {
     setErrorRegis('')
-    const data = await handleCreateAccount(username, userEmail, userPassword)
+    const data = await handleCreateAccount(username, userEmail, userPassword, userRole)
 
     if (!data.status) return setErrorRegis(data.message)
 
@@ -80,7 +82,12 @@ const Home = () => {
     setUserPassword('')
   };
 
-  const handleCloseDeleteConfirm = () => setShowDeleteConfirm(false)
+  const handleCloseDeleteConfirm = () => {
+    setShowDeleteConfirm(false)
+    setUserDelete(0)
+    setUseranmeDelete('')
+  }
+
   const handleDelete = async () => {
     await handleDeleteAccount(userDelete)
     handleCloseDeleteConfirm()
@@ -100,6 +107,11 @@ const Home = () => {
       key: 'email',
     },
     {
+      title: 'Role',
+      dataIndex: 'role',
+      key: 'role',
+    },
+    {
       title: 'Aksi',
       dataIndex: '',
       key: '',
@@ -111,6 +123,7 @@ const Home = () => {
           style={{ cursor: 'pointer', color: 'red' }}
           onClick={() => {
             setUserDelete(data.id)
+            setUseranmeDelete(data.username)
             setShowDeleteConfirm(true)
           }}
         >
@@ -126,11 +139,11 @@ const Home = () => {
       icon: <HomeOutlined />,
       label: 'Dashboard',
     },
-    {
-      key: 'Kelola Kriteria',
-      icon: <CheckSquareOutlined />,
-      label: 'Kelola Kriteria',
-    },
+    // {
+    //   key: 'Kelola Kriteria',
+    //   icon: <CheckSquareOutlined />,
+    //   label: 'Kelola Kriteria',
+    // },
     {
       key: 'Kelola Instrument',
       icon: <CheckSquareOutlined />,
@@ -199,6 +212,17 @@ const Home = () => {
                     <Form.Label>Password</Form.Label>
                     <Form.Control as="input" />
                   </Form.Group>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                    onChange={(e: any) => setUserRole(e.target.value)}
+                  >
+                    <Form.Label>Role</Form.Label>
+                    <Form.Select value={userRole} aria-label="Default select example">
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </Form.Select>
+                  </Form.Group>
                 </Form>
                 {errorRegisMessage ?
                   <span className="text-red-600 text-sm">{errorRegisMessage}</span> :
@@ -259,16 +283,17 @@ const Home = () => {
 
     if (sessionStorage.getItem('role') === 'ADMIN') {
       setMenus([...admin])
+      setActiveMenu('Dashboard')
       getUsers()
     } else {
-      setActiveMenu('absent')
+      setActiveMenu('Dashboard User')
       setMenus([...staff])
     }
   }, [])
 
   return (
     <Layout className="h-screen">
-      <Sider trigger={null} collapsible collapsed={collapsed} className='p-4'>
+      <Sider trigger={null} collapsible collapsed={collapsed} className='p-1' >
         <Menu
           theme="dark"
           mode="inline"
@@ -279,10 +304,10 @@ const Home = () => {
             }
             setActiveMenu(e.key)
           }}
-          defaultSelectedKeys={[activeMenu]}
+          defaultSelectedKeys={sessionStorage.getItem('role') === 'ADMIN' ? [activeMenu] : ['Dashboard User']}
           items={[
             {
-              key: '',
+              key: sessionStorage.getItem('username'),
               icon: <UserOutlined />,
               label: sessionStorage.getItem('username'),
             },
@@ -312,22 +337,24 @@ const Home = () => {
         <Content
           style={{
             overflow: 'auto',
-            margin: '24px 16px',
+            // margin: '24px 16px',
             width: '100%',
-            padding: 24,
+            // padding: 14,
             minHeight: 280,
-            background: colorBgContainer,
+            background: "#F5F5F5",
           }}
         >
-          {renderBody(activeMenu)}
-          {!!successMessage && <span className="text-green-500 mt-3">{successMessage}</span>}
+          <div style={{ margin: '24px 16px', padding: 14, backgroundColor: 'white' }}>
+            {renderBody(activeMenu)}
+            {!!successMessage && <span className="text-green-500 mt-3">{successMessage}</span>}
+          </div>
         </Content>
 
         <Modal show={showDeleteConfirm} onHide={handleCloseDeleteConfirm} animation={false}>
           <Modal.Header closeButton>
             <Modal.Title>Konfirmasi</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Apakah yakin ingin menghapus tersebut?</Modal.Body>
+          <Modal.Body>Apakah yakin ingin menghapus akun {usernameDelete}?</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDeleteConfirm}>
               Tutup
