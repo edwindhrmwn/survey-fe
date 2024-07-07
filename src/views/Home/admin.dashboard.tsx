@@ -359,11 +359,11 @@ const AdminDashboard = () => {
           return <ProgressBar now={now} label={`${now}%`} />
         }
       },
-      {
-        title: 'aksi',
-        dataIndex: 'username',
-        key: 'username',
-      },
+      // {
+      //   title: 'aksi',
+      //   dataIndex: 'username',
+      //   key: 'username',
+      // },
       {
         title: 'Aksi',
         dataIndex: '',
