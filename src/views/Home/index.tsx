@@ -107,6 +107,11 @@ const Home = () => {
       key: 'email',
     },
     {
+      title: 'Default Password',
+      dataIndex: 'password',
+      key: 'password',
+    },
+    {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
