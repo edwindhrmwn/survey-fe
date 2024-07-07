@@ -36,6 +36,7 @@ const AdminDashboard = () => {
 
   const [openQuestion, setOpenQuestion] = useState(false)
   const [showSuccess, setSuccess] = useState(false)
+  const [showDelete, setDelete] = useState(false)
   const [openRespondenInstrument, setOpenRespondenInstrument] = useState(false)
   const [activeUser, setActiveUser] = useState(0)
   const [username, setActiveUserName] = useState('')
@@ -271,6 +272,11 @@ const AdminDashboard = () => {
     await handleGetUserByInstrument(instrumentId)
     setActiveUser(0)
     setShowDeleteConfirm(false)
+
+    setDelete(true)
+    setTimeout(() => {
+      setDelete(false)
+    }, 2000);
   }
 
   const exportCSV = async (id: number | null) => {
@@ -471,6 +477,11 @@ const AdminDashboard = () => {
         <Modal show={showSuccess} onHide={() => setSuccess(false)}>
           <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
             Success Submit
+          </Modal.Body>
+        </Modal>
+        <Modal show={showDelete} onHide={() => setDelete(false)}>
+          <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
+            Success Delete
           </Modal.Body>
         </Modal>
       </div>
