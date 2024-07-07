@@ -268,6 +268,7 @@ const AdminDashboard = () => {
 
   const handleDelete = async () => {
     await handleDeleteUserAnswer(activeUser, instrumentId)
+    await handleGetUserByInstrument(instrumentId)
     setActiveUser(0)
     setShowDeleteConfirm(false)
   }
