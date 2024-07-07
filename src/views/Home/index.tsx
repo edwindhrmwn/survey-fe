@@ -5,6 +5,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   DeleteOutlined,
+  EditOutlined,
   HomeOutlined,
   CheckSquareOutlined,
 } from '@ant-design/icons';
@@ -53,6 +54,7 @@ const Home = () => {
       uploadAbsent,
       setActiveMenu,
       handleRegister,
+      handleUpdateAccount,
       handleCreateAccount,
       handleDeleteAccount,
     }
@@ -63,14 +65,21 @@ const Home = () => {
   const [userPassword, setUserPassword] = useState('')
   const [userRole, setUserRole] = useState('')
   const [errorRegisMessage, setErrorRegis] = useState('')
+  const [errorEditMessage, setErrorEdit] = useState('')
 
   const [userDelete, setUserDelete] = useState(0)
   const [usernameDelete, setUseranmeDelete] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [successDelete, setSuccessDelete] = useState(false)
   const [successCreate, setSuccessCreate] = useState(false)
+  const [successEdit, setSuccessEdit] = useState(false)
+
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [userId, setActiveUserId] = useState(0)
 
   const handleClose = () => setShow(false);
+  const handleCloseEdit = () => setIsEdit(false);
   const handleShow = () => setShow(true);
   const handleSubmit = async () => {
     setErrorRegis('')
@@ -89,6 +98,25 @@ const Home = () => {
       setSuccessCreate(false)
     }, 2000);
   };
+  const handleSubmitEdit = async () => {
+    setErrorRegis('')
+    const data = await handleUpdateAccount(userId, userEmail, username, userPassword, userRole)
+
+    if (!data.status) return setErrorEdit(data.message)
+
+    handleCloseEdit()
+
+    setUserRole('')
+    setUsername('')
+    setUserEmail('')
+    setUserPassword('')
+
+    setSuccessEdit(true)
+
+    setTimeout(() => {
+      setSuccessEdit(false)
+    }, 2000);
+  }
 
   const handleCloseDeleteConfirm = () => {
     setShowDeleteConfirm(false)
@@ -134,19 +162,35 @@ const Home = () => {
       dataIndex: '',
       key: '',
       render: (data: any) => {
-        if (data.email == sessionStorage.getItem('email')) {
-          return <DeleteOutlined />
-        }
-        return <span
-          style={{ cursor: 'pointer', color: 'red' }}
-          onClick={() => {
-            setUserDelete(data.id)
-            setUseranmeDelete(data.username)
-            setShowDeleteConfirm(true)
-          }}
-        >
-          <DeleteOutlined />
-        </span>
+        return (
+          <div className="flex gap-4">
+            <span
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                setIsEdit(true)
+                setActiveUserId(data.id)
+                setUsername(data.username)
+                setUserRole(data.role)
+                setUserEmail(data.email)
+                setUserPassword(data.password)
+              }}
+            >
+              <EditOutlined />
+            </span>
+            {data.role != 'admin' &&
+              <span
+                style={{ cursor: 'pointer', color: 'red' }}
+                onClick={() => {
+                  setUserDelete(data.id)
+                  setUseranmeDelete(data.username)
+                  setShowDeleteConfirm(true)
+                }}
+              >
+                <DeleteOutlined />
+              </span>
+            }
+          </div >
+        )
       }
     },
   ];
@@ -199,6 +243,65 @@ const Home = () => {
             <Button variant="primary" onClick={handleShow}>
               Tambah Akun
             </Button>
+
+            <Modal show={isEdit} onHide={handleCloseEdit}>
+              <Modal.Header closeButton>
+                <Modal.Title>Edit Akun</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="name@example.com"
+                      autoFocus
+                      value={userEmail}
+                      onChange={(e: any) => setUserEmail(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>User Name</Form.Label>
+                    <Form.Control
+                      placeholder="User Name"
+                      value={username}
+                      onChange={(e: any) => setUsername(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                    onChange={(e: any) => setUserPassword(e.target.value)}
+                  >
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control as="input" value={userPassword} />
+                  </Form.Group>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                    onChange={(e: any) => setUserRole(e.target.value)}
+                  >
+                    <Form.Label>Role</Form.Label>
+                    <Form.Select value={userRole} aria-label="Default select example">
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Form>
+                {errorEditMessage ?
+                  <span className="text-red-600 text-sm">{errorEditMessage}</span> :
+                  null
+                }
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseEdit}>
+                  Tutup
+                </Button>
+                <Button variant="primary" onClick={handleSubmitEdit}>
+                  Simpan
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
             <Modal show={show} onHide={handleClose}>
               <Modal.Header closeButton>
@@ -397,6 +500,11 @@ const Home = () => {
         <Modal show={successCreate} onHide={() => setSuccessCreate(false)}>
           <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
             Success Create
+          </Modal.Body>
+        </Modal>
+        <Modal show={successEdit} onHide={() => setSuccessEdit(false)}>
+          <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
+            Success Update
           </Modal.Body>
         </Modal>
       </Layout>

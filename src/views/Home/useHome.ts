@@ -50,8 +50,7 @@ const useHome = () => {
     }
   }
 
-  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleRegister = async () => {
     try {
       await axios({
         method: 'POST',
@@ -76,6 +75,30 @@ const useHome = () => {
         setErrors([])
       }, 2000);
       console.log(error.response.data.messages)
+    }
+  }
+
+  const handleUpdateAccount = async (id: number, email: string, username: string, password: string, role: string) => {
+    try {
+      const data = {
+        email,
+        username,
+        password,
+        role,
+      }
+      await axios.put(`${import.meta.env.VITE_BE_BASE_URL}/user/edit/${id}`, data, {})
+
+      await getUsers()
+
+      return { status: true, message: 'OK' }
+    } catch (error: any) {
+      setErrors(error.response.data.message)
+      setTimeout(() => {
+        setErrors([])
+      }, 2000);
+      console.log(error)
+      console.log(error.response.data.message)
+      return { status: false, message: error.response.data.message }
     }
   }
 
@@ -391,6 +414,7 @@ const useHome = () => {
       handleRegister,
       handleCreateAccount,
       handleDeleteAccount,
+      handleUpdateAccount,
       handleGetInstrument,
       handleGetCategoryCriteria,
       handleGetCategories,
