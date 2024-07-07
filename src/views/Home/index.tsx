@@ -67,6 +67,8 @@ const Home = () => {
   const [userDelete, setUserDelete] = useState(0)
   const [usernameDelete, setUseranmeDelete] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [successDelete, setSuccessDelete] = useState(false)
+  const [successCreate, setSuccessCreate] = useState(false)
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -80,6 +82,12 @@ const Home = () => {
     setUsername('')
     setUserEmail('')
     setUserPassword('')
+
+    setSuccessCreate(true)
+
+    setTimeout(() => {
+      setSuccessCreate(false)
+    }, 2000);
   };
 
   const handleCloseDeleteConfirm = () => {
@@ -91,6 +99,11 @@ const Home = () => {
   const handleDelete = async () => {
     await handleDeleteAccount(userDelete)
     handleCloseDeleteConfirm()
+    setSuccessDelete(true)
+
+    setTimeout(() => {
+      setSuccessDelete(false)
+    }, 2000);
   }
 
   const { Header, Sider, Content } = Layout;
@@ -375,6 +388,16 @@ const Home = () => {
               Lanjutkan
             </Button>
           </Modal.Footer>
+        </Modal>
+        <Modal show={successDelete} onHide={() => setSuccessDelete(false)}>
+          <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
+            Success Delete
+          </Modal.Body>
+        </Modal>
+        <Modal show={successCreate} onHide={() => setSuccessCreate(false)}>
+          <Modal.Body className="bg-[#77e977ee] text-green-900 rounded-xl">
+            Success Create
+          </Modal.Body>
         </Modal>
       </Layout>
     </Layout>
