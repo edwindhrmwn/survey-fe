@@ -276,21 +276,35 @@ const AdminDashboard = () => {
     const firstRow = [{ v: criteriaName }]
     const secondRow = [{ v: instrumentName }]
     const thirdRow = [{ v: '' }]
+
     const header: any[] = [{ v: 'No' }, { v: 'Pertanyaan' }]
+    const body: any[] = []
+
     for (const e of printData.users) {
       const detail: any = e
+      
+      if (id) {
+        if (detail.id == id) {
+          header.push({ v: detail.username })
+        }
+
+        continue
+      }
       header.push({ v: detail.username })
     }
-
-    const body: any[] = []
 
     for (let i = 0; i < printData.questions.length; i++) {
       const o = printData.questions[i];
 
       const row = [{ v: i + 1 }, { v: o.question }]
-      for (const user of printData.users) {
-        const find = printData.answers.find((e: any) => e.userId == user.id && e.questionId == o.id)
+      if (id) {
+        const find = printData.answers.find((e: any) => e.userId == id && e.questionId == o.id)
         row.push({ v: !!find ? find.answer : '' })
+      } else {
+        for (const user of printData.users) {
+          const find = printData.answers.find((e: any) => e.userId == user.id && e.questionId == o.id)
+          row.push({ v: !!find ? find.answer : '' })
+        }
       }
 
       body.push(row)
