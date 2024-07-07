@@ -41,6 +41,7 @@ const AdminDashboard = () => {
   const [username, setActiveUserName] = useState('')
   const [instrumentId, setInstrumentId] = useState(0)
   const [instrumentName, setInstrumentName] = useState('')
+  const [criteriaName, setCriteriaName] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
@@ -51,9 +52,10 @@ const AdminDashboard = () => {
     setOpenQuestion(false)
   }
 
-  const handleDetailReponden = async (id: number, name: string) => {
+  const handleDetailReponden = async (id: number, criteriaName: string, name: string) => {
     setOpenRespondenInstrument(true)
     setInstrumentId(id)
+    setCriteriaName(criteriaName)
     setInstrumentName(name)
     await handleGetUserByInstrument(id)
   }
@@ -271,36 +273,29 @@ const AdminDashboard = () => {
   }
 
   const exportCSV = async (id: number | null) => {
-    // @ts-ignore
-    const rawHeader = [{ No: 0, ...printData[0] }].map(Object.keys)
-    const header = rawHeader[0].map(o => { return { v: o } })
+    const firstRow = [{ v: criteriaName }]
+    const secondRow = [{ v: instrumentName }]
+    const thirdRow = [{ v: '' }]
+    const header: any[] = [{ v: 'No' }, { v: 'Pertanyaan' }]
+    for (const e of printData.users) {
+      const detail: any = e
+      header.push({ v: detail.username })
+    }
+
     const body: any[] = []
 
-    for (let i = 0; i < printData.length; i++) {
-      const o = printData[i];
-      console.log(o['User Id'], id)
-      if (id) {
-        if (o['User Id'] == id) body.push([
-          { v: i + 1 },
-          { v: o['Nama Instrument'] },
-          { v: o['User Id'] },
-          { v: o['Nama Responden'] },
-          { v: o['Pertanyaan'] },
-          { v: o['Jawaban'] },
-        ])
-        continue
+    for (let i = 0; i < printData.questions.length; i++) {
+      const o = printData.questions[i];
+
+      const row = [{ v: i + 1 }, { v: o.question }]
+      for (const user of printData.users) {
+        const find = printData.answers.find((e: any) => e.userId == user.id && e.questionId == o.id)
+        row.push({ v: !!find ? find.answer : '' })
       }
-      console.log("hereeee")
-      body.push([
-        { v: i + 1 },
-        { v: o['Nama Instrument'] },
-        { v: o['User Id'] },
-        { v: o['Nama Responden'] },
-        { v: o['Pertanyaan'] },
-        { v: o['Jawaban'] },
-      ])
+
+      body.push(row)
     }
-    const data = [header, ...body]
+    const data = [firstRow, secondRow, thirdRow, header, ...body]
 
     const workBook = XLSX.utils.book_new(); // create a new blank book
     const workSheet = XLSX.utils.aoa_to_sheet(data, {});
@@ -500,7 +495,7 @@ const AdminDashboard = () => {
                       data-toggle="modal"
                       data-target="#tabel1Modal"
                       className="btn btn-primary btn-icon-split"
-                      onClick={() => handleDetailReponden(detail.id, detail.instrumentName)}
+                      onClick={() => handleDetailReponden(detail.id, `Kriteria ${+i + 1} - ${e.categoryName}`, detail.instrumentName)}
                       style={{
                         backgroundColor: detail.questions > 0 && !!detail.isCompleted ? '#C5D3E0' : '#0C6DFD',
                         color: detail.questions > 0 && !!detail.isCompleted ? 'black' : 'white',

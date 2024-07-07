@@ -25,7 +25,7 @@ const useHome = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [instrumentQuestion, setInstrumentQuestion] = useState([])
   const [responden, setResponden] = useState([])
-  const [printData, setDataPrint] = useState([])
+  const [printData, setDataPrint] = useState<any>({})
   const [questions, setQuestion] = useState([])
   const [basedQuestions, setBasedQuestions] = useState([])
 
@@ -365,9 +365,11 @@ const useHome = () => {
       setIsLoading(true)
 
       const { data } = await axios.get(import.meta.env.VITE_BE_BASE_URL + '/user-by-instrument/' + id, {})
+      const { users, questions, answers } = data.data
+      const print = { users, questions, answers }
 
       setResponden(data.data.data)
-      setDataPrint(data.data.print)
+      setDataPrint(print)
       setIsLoading(false)
     } catch (error: any) {
       setErrors(error.response.data.message)
