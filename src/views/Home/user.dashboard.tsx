@@ -73,8 +73,9 @@ const UserDashboard = () => {
 
   const handleSubmit = async () => {
     await handleSubmitAnswer(questions)
+    await handleGetCategoryCriteria()
+
     setOpenQuestion(!openQuestion)
-    handleGetCategoryCriteria()
     setSuccess(true)
 
     setTimeout(() => {

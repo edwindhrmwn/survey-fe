@@ -26,6 +26,7 @@ const AdminDashboard = () => {
     },
     methods: {
       setQuestion,
+      setActiveMenu,
       handleSubmitAnswer,
       handleDeleteUserAnswer,
       handleGetUserByInstrument,
@@ -92,6 +93,8 @@ const AdminDashboard = () => {
 
     await handleSubmitAnswer(data)
     await handleGetUserByInstrument(instrumentId)
+    await handleGetCategoryCriteriaAdmin()
+
     setOpenQuestion(!openQuestion)
     handleGetCategoryCriteriaAdmin()
     setSuccess(true)
@@ -270,6 +273,8 @@ const AdminDashboard = () => {
   const handleDelete = async () => {
     await handleDeleteUserAnswer(activeUser, instrumentId)
     await handleGetUserByInstrument(instrumentId)
+    await handleGetCategoryCriteriaAdmin()
+
     setActiveUser(0)
     setShowDeleteConfirm(false)
 
