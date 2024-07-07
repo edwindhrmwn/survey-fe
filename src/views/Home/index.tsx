@@ -206,11 +206,11 @@ const Home = () => {
     //   icon: <CheckSquareOutlined />,
     //   label: 'Kelola Kriteria',
     // },
-    {
-      key: 'Kelola Instrument',
-      icon: <CheckSquareOutlined />,
-      label: 'Kelola Instrument',
-    },
+    // {
+    //   key: 'Kelola Instrument',
+    //   icon: <CheckSquareOutlined />,
+    //   label: 'Kelola Instrument',
+    // },
     {
       key: 'Kelola Akun',
       icon: <UserOutlined />,
