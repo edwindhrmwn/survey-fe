@@ -33,6 +33,7 @@ const LoginForm = (props: IProps) => {
   return (
     <section className="flex items-center justify-center flex-col gap-3 min-w-[400px] w-[40vw] bg-[white] p-8 rounded" style={{ minHeight: '50vh' }}>
       <img src={Unj} style={{ width: 60 }} />
+      <span className="text-xl font-bold">REPOSITORI AKREDITASI PRODI</span>
       <span className="text-xl font-bold">MASUK</span>
 
       <form className="flex flex-col gap-3 w-full" autoComplete="asdasdsa" onSubmit={handleLogin}>
