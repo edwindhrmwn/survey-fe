@@ -47,16 +47,10 @@ const AdminDashboard = () => {
   const [showDeleteConfirmation, setShowDeleteConfirm] = useState(false)
   const [errorUpload, setErrorUpload] = useState('')
   const [acceptedType, _] = useState([
-    'application/x-zip-compressed',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'image/jpg',
     'application/pdf',
-    'image/png',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'text/plain',
-    'application/x-rar-compressed',
-    'application/octet-stream'
   ])
 
   useEffect(() => {
@@ -145,13 +139,13 @@ const AdminDashboard = () => {
         return (
           <div key={errorUpload}>
             <div>Berkas yang diunggah</div>
-            <div style={{ fontSize: 10, marginBottom: 5 }}>File harus berekstensi .doc, .docx, .xls, .xlsx, .pdf, .zip, .rar, .jpg, .png, atau .txt. Maks. 1 MB</div>
+            <div style={{ fontSize: 10, marginBottom: 5 }}>File harus berekstensi .doc, .docx, .xls, .xlsx, atau .pdf, .txt. Maks. 1 MB</div>
             <div className="input-group mb-3">
               <input
                 id="inputGroupFile02"
                 key={errorUpload}
                 type="file"
-                accept='.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.xls,.xlsx,.pdf,.zip,.rar,.jpg,.png,.txt'
+                accept='.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.xls,.xlsx,.pdf'
                 disabled={isDisable}
                 className="form-control"
                 onChange={(e: any) => {
