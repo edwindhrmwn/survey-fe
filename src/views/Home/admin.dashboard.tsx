@@ -45,6 +45,19 @@ const AdminDashboard = () => {
   const [instrumentName, setInstrumentName] = useState('')
   const [criteriaName, setCriteriaName] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirm] = useState(false)
+  const [errorUpload, setErrorUpload] = useState('')
+  const [acceptedType, _] = useState([
+    'application/x-zip-compressed',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpg',
+    'application/pdf',
+    'image/png',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/plain',
+    'application/x-rar-compressed',
+    'application/octet-stream'
+  ])
 
   useEffect(() => {
     handleGetCategoryCriteriaAdmin()
@@ -52,6 +65,7 @@ const AdminDashboard = () => {
 
   const handleCloseQuestion = () => {
     setOpenQuestion(false)
+    setErrorUpload('')
   }
 
   const handleDetailReponden = async (id: number, criteriaName: string, name: string) => {
@@ -122,21 +136,38 @@ const AdminDashboard = () => {
               <a href={data.answer} target="_blank">Berkas Terikirm</a>
               <div className="input-group mb-3">
                 {/* @ts-ignore */}
-                <input type="file" disabled={isDisable} className="form-control" id="inputGroupFile02" onChange={(e) => handleUploadFile(data, e.target.files[0])} />
+                <input type="file" accept='.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.xls,.xlsx,.pdf,.zip,.rar,.jpg,.png,.txt' disabled={isDisable} className="form-control" id="inputGroupFile02" onChange={(e) => handleUploadFile(data, e.target.files[0])} />
                 <label className="input-group-text" htmlFor="inputGroupFile02">Perbaharui Berkas</label>
               </div>
             </div>
           </div>
         }
-
         return (
-          <div>
-            Berkas
+          <div key={errorUpload}>
+            <div>Berkas yang diunggah</div>
+            <div style={{ fontSize: 10, marginBottom: 5 }}>File harus berekstensi .doc, .docx, .xls, .xlsx, .pdf, .zip, .rar, .jpg, .png, atau .txt. Maks. 1 MB</div>
             <div className="input-group mb-3">
-              {/* @ts-ignore */}
-              <input type="file" disabled={isDisable} className="form-control" id="inputGroupFile02" onChange={(e) => handleUploadFile(data, e.target.files[0])} />
+              <input
+                id="inputGroupFile02"
+                key={errorUpload}
+                type="file"
+                accept='.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.xls,.xlsx,.pdf,.zip,.rar,.jpg,.png,.txt'
+                disabled={isDisable}
+                className="form-control"
+                onChange={(e: any) => {
+                  setErrorUpload('')
+                  if (e.target.files[0].size > 1048576) return setErrorUpload('Maksimal ukuran data 1 MB')
+                  if (!acceptedType.includes(e.target.files[0].type)) return setErrorUpload('Unggah file sesuai ekstensi yang sudah ditentukan')
+
+                  // @ts-ignore
+                  handleUploadFile(data, e.target.files[0])
+                }}
+              />
               <label className="input-group-text" htmlFor="inputGroupFile02">{isDisable ? 'Berkas Terikirm' : 'Kirim Berkas'}</label>
             </div>
+            {!!errorUpload &&
+              <div className="text-red-500 text-xs">*{errorUpload}</div>
+            }
           </div>
         )
       case 'essay':
@@ -294,7 +325,7 @@ const AdminDashboard = () => {
 
     for (const e of printData.users) {
       const detail: any = e
-      
+
       if (id) {
         if (detail.id == id) {
           header.push({ v: detail.username })
@@ -449,7 +480,9 @@ const AdminDashboard = () => {
             <Form className="flex flex-col gap-3">
               {questions.length ?
                 questions.map((e: any, i: Key) => {
-                  return renderQuestion(e.questionType, e, false, +i)
+                  return <span key={i}>
+                    {renderQuestion(e.questionType, e, false, +i)}
+                  </span>
                 }) : null
               }
             </Form>
