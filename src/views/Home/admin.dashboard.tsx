@@ -5,7 +5,7 @@ import { ProgressBar } from "react-bootstrap";
 import { Key, useEffect, useState } from "react"
 import { Form, Input, Table, TableColumnsType } from "antd";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
-import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, PrinterOutlined } from "@ant-design/icons"
+import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, EyeOutlined, PrinterOutlined } from "@ant-design/icons"
 
 import useHome from "./useHome"
 // @ts-ignore
@@ -96,8 +96,8 @@ const AdminDashboard = () => {
     setQuestion(rs)
   }
 
-  const handleSubmit = async () => {
-    const data = questions.map((v: any) => ({ ...v, userId: activeUser }))
+  const handleSubmit = async (isApproved: boolean) => {
+    const data = questions.map((v: any) => ({ ...v, questionId: v.id, userId: activeUser, approvalTypeId: isApproved ? 1 : 3, approvalTypeCode: isApproved ? 'Disetujui' : 'Tidak Disetujui' }))
 
     await handleSubmitAnswer(data)
     await handleGetUserByInstrument(instrumentId)
@@ -374,6 +374,17 @@ const AdminDashboard = () => {
         key: 'username',
       },
       {
+        title: 'Status',
+        dataIndex: 'approvalTypeCode',
+        key: 'approvalTypeCode',
+        render: (detail: string, data: any) => {
+  
+          if (detail == 'Disetujui') return <Button variant="success">{detail}</Button>
+          if (detail == 'Tidak Disetujui') return <Button variant="danger">Dikembalikan</Button>
+          if ((+data.answers / +data.questions) == 1 && !detail) return <Button variant="warning">Menunggu validasi</Button>
+        }
+      },
+      {
         title: 'Terjawab',
         dataIndex: 'answers',
         key: 'answers',
@@ -409,7 +420,7 @@ const AdminDashboard = () => {
                 setActiveUser(data.userId)
               }}
             >
-              <EditOutlined />
+              <EyeOutlined />
             </span>
             <span
               style={{ cursor: 'pointer', color: 'red' }}
@@ -475,19 +486,21 @@ const AdminDashboard = () => {
               {questions.length ?
                 questions.map((e: any, i: Key) => {
                   return <span key={i}>
-                    {renderQuestion(e.questionType, e, false, +i)}
+                    {renderQuestion(e.questionType, e, true, +i)}
                   </span>
                 }) : null
               }
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseQuestion}>
-              Tutup
-            </Button>
-            <Button variant="primary" onClick={handleSubmit} disabled={JSON.stringify(basedQuestions) == JSON.stringify(questions)}>
-              Simpan
-            </Button>
+            <div className='flex justify-center w-full gap-3'>
+              <Button variant="success" onClick={() => handleSubmit(true)}>
+                Disetujui
+              </Button>
+              <Button variant="danger" onClick={() => handleSubmit(false)}>
+                Dikembalikan
+              </Button>
+            </div>
           </Modal.Footer>
         </Modal>
 

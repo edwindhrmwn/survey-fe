@@ -1,7 +1,7 @@
-import { Table } from "antd"
+import {Table } from "antd"
 import useHome from "./useHome"
 import { useEffect } from "react"
-import { ProgressBar } from "react-bootstrap"
+import { ProgressBar, Button } from "react-bootstrap"
 
 const SurverHistory = () => {
   const {
@@ -18,6 +18,18 @@ const SurverHistory = () => {
       title: 'No',
       render: (_: any, data: any, idx: any) => {
         return idx + 1
+      }
+    },
+    {
+      title: 'Status',
+      dataIndex: 'approvalTypeCode',
+      key: 'approvalTypeCode',
+      render: (detail: string, data: any) => {
+        console.log(data)
+
+        if (detail == 'Disetujui') return <Button variant="success">{detail}</Button>
+        if (detail == 'Tidak Disetujui') return <Button variant="danger">Dikembalikan</Button>
+        if ((+data.answers / +data.questions) == 1 && !detail) return <Button variant="warning">Menunggu validasi</Button>
       }
     },
     {

@@ -80,7 +80,9 @@ const UserDashboard = () => {
   }
 
   const handleSubmit = async () => {
-    await handleSubmitAnswer(questions)
+    const data = questions.map((v: any) => ({ ...v, approvalTypeId: null, approvalTypeCode: '' }))
+
+    await handleSubmitAnswer(data)
     await handleGetCategoryCriteria()
 
     setOpenQuestion(!openQuestion)
@@ -101,7 +103,7 @@ const UserDashboard = () => {
   const renderQuestion = (type: string, data: any, isDisable: boolean, idx: number) => {
     switch (type) {
       case 'upload':
-        if (data.answer && !data.notSubmitYet) {
+        if (data.answer && !data.notSubmitYet && isDisable) {
           return <div>
             <div>Berkas yang diunggah</div>
             <div style={{ fontSize: 10, marginBottom: 5 }}>File harus berekstensi .doc, .docx, .xls, .xlsx, atau .pdf, .txt. Maks. 1 MB</div>
@@ -295,6 +297,11 @@ const UserDashboard = () => {
 
             <div className="flex flex-wrap gap-4">
               {e.criteria.map((detail: any, idx: Key) => {
+                let btnText = 'Isi Survei'
+                if (detail.approvalTypeCode == 'Disetujui') btnText = detail.approvalTypeCode
+                if (detail.approvalTypeCode == 'Tidak Disetujui') btnText = detail.approvalTypeCode
+                if (!detail.approvalTypeCode && detail.isCompleted) btnText = 'Menunggu Validasi'
+
                 return <div className="card shadow col-6 col-sm-3" key={idx}>
                   <div className="card-header">
                     <h6 className="m-0 font-weight-bold text-primary">Tabel {+i + 1}{e.criteria.length > 1 ? `.${+idx + 1}` : ''}</h6>
@@ -312,7 +319,7 @@ const UserDashboard = () => {
                           color: detail.questions > 0 && !!detail.isCompleted ? 'black' : 'white',
                         }}
                       >
-                        <span className="text">{detail.questions > 0 && !!detail.isCompleted ? 'Sudah di isi' : 'Isi Survei'}</span>
+                        <span className="text">{btnText}</span>
                       </a>
                     }
                   </div>
@@ -328,14 +335,14 @@ const UserDashboard = () => {
                         {questions.length ?
                           questions.map((e: any, i: Key) => {
                             return <span key={i}>
-                              {renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted, +i)}
+                              {renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted && detail.approvalTypeCode != 'Tidak Disetujui', +i)}
                             </span>
                           }) : null
                         }
                       </Form>
                     </Modal.Body>
                     <Modal.Footer>
-                      {detail.questions > 0 && !!detail.isCompleted ? null :
+                      {(detail.questions > 0 && !!detail.isCompleted && detail.approvalTypeCode != 'Tidak Disetujui') ? null :
                         <>
                           <Button variant="secondary" onClick={handleCloseQuestion}>
                             Tutup
