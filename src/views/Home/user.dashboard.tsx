@@ -26,6 +26,13 @@ const UserDashboard = () => {
   const [openQuestion, setOpenQuestion] = useState(false)
   const [activeQuestion, setActiveQuestion] = useState(0)
   const [showSuccess, setSuccess] = useState(false)
+  const [errorUpload, setErrorUpload] = useState('')
+  const [acceptedType, _] = useState([
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ])
 
   useEffect(() => {
     handleGetCategoryCriteria()
@@ -40,6 +47,7 @@ const UserDashboard = () => {
   const handleCloseQuestion = () => {
     setOpenQuestion(false)
     setActiveQuestion(0)
+    setErrorUpload('')
   }
 
   const handlOnChange = (data: any, answer: any, additionalAnswer?: any) => {
@@ -95,7 +103,8 @@ const UserDashboard = () => {
       case 'upload':
         if (data.answer && !data.notSubmitYet) {
           return <div>
-            Berkas
+            <div>Berkas yang diunggah</div>
+            <div style={{ fontSize: 10, marginBottom: 5 }}>File harus berekstensi .doc, .docx, .xls, .xlsx, atau .pdf, .txt. Maks. 1 MB</div>
             <div className="input-group mb-3">
               {/* @ts-ignore */}
               <a href={data.answer} className="input-group-text" target="_blank">Berkas Terikirm</a>
@@ -105,13 +114,31 @@ const UserDashboard = () => {
         }
 
         return (
-          <div>
-            Berkas
+          <div key={errorUpload}>
+            <div>Berkas yang diunggah</div>
+            <div style={{ fontSize: 10, marginBottom: 5 }}>File harus berekstensi .doc, .docx, .xls, .xlsx, atau .pdf, .txt. Maks. 1 MB</div>
             <div className="input-group mb-3">
-              {/* @ts-ignore */}
-              <input type="file" disabled={isDisable} className="form-control" id="inputGroupFile02" onChange={(e) => handleUploadFile(data, e.target.files[0])} />
+              <input
+                id="inputGroupFile02"
+                type="file"
+                accept='.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.xls,.xlsx,.pdf'
+                disabled={isDisable}
+                className="form-control"
+                onChange={(e: any) => {
+                  setErrorUpload('')
+                  console.log(e.target.files[0])
+                  if (e.target.files[0].size > 1048576) return setErrorUpload('Maksimal ukuran data 1 MB')
+                  if (!acceptedType.includes(e.target.files[0].type)) return setErrorUpload('Unggah file sesuai ekstensi yang sudah ditentukan')
+
+                  // @ts-ignore
+                  handleUploadFile(data, e.target.files[0])
+                }}
+              />
               <label className="input-group-text" htmlFor="inputGroupFile02">{isDisable ? 'Berkas Terikirm' : 'Kirim Berkas'}</label>
             </div>
+            {!!errorUpload &&
+              <div className="text-red-500 text-xs">*{errorUpload}</div>
+            }
           </div>
         )
       case 'essay':
@@ -300,7 +327,9 @@ const UserDashboard = () => {
                       <Form className="flex flex-col w-full gap-3">
                         {questions.length ?
                           questions.map((e: any, i: Key) => {
-                            return renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted, +i)
+                            return <span key={i}>
+                              {renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted, +i)}
+                            </span>
                           }) : null
                         }
                       </Form>
