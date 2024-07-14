@@ -299,7 +299,7 @@ const UserDashboard = () => {
               {e.criteria.map((detail: any, idx: Key) => {
                 let btnText = 'Isi Survei'
                 if (detail.approvalTypeCode == 'Disetujui') btnText = detail.approvalTypeCode
-                if (detail.approvalTypeCode == 'Tidak Disetujui') btnText = detail.approvalTypeCode
+                if (detail.approvalTypeCode == 'Tidak Disetujui') btnText = "Isi Ulang Survei"
                 if (!detail.approvalTypeCode && detail.isCompleted) btnText = 'Menunggu Validasi'
 
                 return <div className="card shadow col-6 col-sm-3" key={idx}>
