@@ -378,7 +378,7 @@ const AdminDashboard = () => {
         dataIndex: 'approvalTypeCode',
         key: 'approvalTypeCode',
         render: (detail: string, data: any) => {
-  
+
           if (detail == 'Disetujui') return <Button variant="success">{detail}</Button>
           if (detail == 'Tidak Disetujui') return <Button variant="danger">Dikembalikan</Button>
           if ((+data.answers / +data.questions) == 1 && !detail) return <Button variant="warning">Menunggu validasi</Button>
@@ -494,11 +494,21 @@ const AdminDashboard = () => {
           </Modal.Body>
           <Modal.Footer>
             <div className='flex justify-center w-full gap-3'>
-              <Button variant="success" onClick={() => handleSubmit(true)}>
-                Disetujui
-              </Button>
+              {
+                // @ts-ignore
+                questions.length && questions[0].approvalTypeCode == 'Disetujui'
+                  ? null
+                  : <Button variant="success" onClick={() => handleSubmit(true)}>
+                    Disetujui
+                  </Button>
+              }
               <Button variant="danger" onClick={() => handleSubmit(false)}>
-                Dikembalikan
+                {
+                  // @ts-ignore
+                  questions.length && questions[0].approvalTypeCode == 'Disetujui'
+                    ? "Batal Disetujui"
+                    : "Dikembalikan"
+                }
               </Button>
             </div>
           </Modal.Footer>
