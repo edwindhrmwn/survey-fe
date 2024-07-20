@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { ProgressBar } from "react-bootstrap";
 import { Key, useEffect, useState } from "react"
-import { Form, Input, Table, TableColumnsType } from "antd";
+import { Collapse, Form, Input, Table, TableColumnsType } from "antd";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, EyeOutlined, PrinterOutlined } from "@ant-design/icons"
 
@@ -13,6 +13,7 @@ import { storage } from "../../../firebase"
 // @ts-ignore
 import { ExcelfitToColumn } from "../../utils"
 import dayjs from 'dayjs';
+import TextArea from 'antd/es/input/TextArea';
 
 
 const AdminDashboard = () => {
@@ -46,6 +47,7 @@ const AdminDashboard = () => {
   const [criteriaName, setCriteriaName] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirm] = useState(false)
   const [errorUpload, setErrorUpload] = useState('')
+  const [disableSubmit, setDisableSubmit] = useState(false)
   const [acceptedType, _] = useState([
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -74,6 +76,54 @@ const AdminDashboard = () => {
     const rs: any = []
     for (const question of questions) {
       const detail: any = question
+
+      if (detail.questionGroupName) {
+        if (detail.questionGroupName == data.questionGroupName) {
+          const rowData = []
+          for (const question2 of detail.data) {
+            const detail2: any = question2
+
+            if (detail2?.id == data.id) {
+              rowData.push({
+                ...detail2,
+                questionId: detail2.id,
+                userId: activeUser,
+                answer,
+                additionalAnswer,
+                instrumentId: detail2.instrumentId,
+              })
+            } else {
+              rowData.push({
+                ...detail2,
+                questionId: detail2.id,
+                userId: activeUser,
+                instrumentId: detail2.instrumentId,
+              })
+            }
+          }
+          rs.push({
+            ...detail,
+            userId: activeUser,
+            instrumentId: detail.instrumentId,
+            data: rowData,
+          })
+          continue
+        }
+
+        rs.push({
+          ...detail,
+          data: detail.data.map((e: any) => {
+            return {
+              ...e,
+              questionId: e.id,
+              userId: activeUser,
+              instrumentId: e.instrumentId,
+            }
+          })
+        })
+        continue
+      }
+
       if (detail?.id == data.id) {
         rs.push({
           ...detail,
@@ -93,11 +143,46 @@ const AdminDashboard = () => {
       }
     }
 
+    console.log(rs)
+
     setQuestion(rs)
   }
 
   const handleSubmit = async (isApproved: boolean) => {
-    const data = questions.map((v: any) => ({ ...v, questionId: v.id, userId: activeUser, approvalTypeId: isApproved ? 1 : 3, approvalTypeCode: isApproved ? 'Disetujui' : 'Tidak Disetujui' }))
+    setDisableSubmit(true)
+
+    const data: any = [] // questions.map((v: any) => ({ ...v, questionId: v.id, userId: activeUser, approvalTypeId: isApproved ? 1 : 3, approvalTypeCode: isApproved ? 'Disetujui' : 'Tidak Disetujui' }))
+    for (const question of questions) {
+      const detail: any = question
+
+      if (!!detail.questionGroupName) {
+        const rawData: any = []
+        for (const detail2 of detail.data) {
+          rawData.push({
+            ...detail2,
+            questionId: detail2.id,
+            userId: activeUser,
+            approvalTypeId: isApproved ? 1 : 3,
+            approvalTypeCode: isApproved ? 'Disetujui' : 'Tidak Disetujui'
+          })
+        }
+        data.push({
+          ...detail,
+          userId: activeUser,
+          instrumentId: detail.instrumentId,
+          data: rawData,
+        })
+        continue
+      }
+
+      data.push({
+        ...detail,
+        questionId: detail.id,
+        userId: activeUser,
+        approvalTypeId: isApproved ? 1 : 3,
+        approvalTypeCode: isApproved ? 'Disetujui' : 'Tidak Disetujui'
+      })
+    }
 
     await handleSubmitAnswer(data)
     await handleGetUserByInstrument(instrumentId)
@@ -107,6 +192,7 @@ const AdminDashboard = () => {
     handleGetCategoryCriteriaAdmin()
     setSuccess(true)
     setActiveUser(0)
+    setDisableSubmit(false)
 
     setTimeout(() => {
       setSuccess(false)
@@ -169,6 +255,13 @@ const AdminDashboard = () => {
           <div>
             <span>{data.question}</span>
             <Input value={data?.answer || ''} disabled={isDisable} onChange={(e) => handlOnChange(data, e.target.value)} />
+          </div>
+        )
+      case 'essay area':
+        return (
+          <div>
+            <span>{data.question}</span>
+            <TextArea value={data?.answer || ''} disabled={isDisable} onChange={(e) => handlOnChange(data, e.target.value)} />
           </div>
         )
       case 'options':
@@ -485,6 +578,23 @@ const AdminDashboard = () => {
             <Form className="flex flex-col gap-3">
               {questions.length ?
                 questions.map((e: any, i: Key) => {
+
+                  if (!!e.questionGroupName) {
+                    return <Collapse
+                      key={i}
+                      defaultActiveKey={["0"]}
+                      expandIconPosition="start"
+                    >
+                      <Collapse.Panel key={i} header={e.questionGroupName}>
+                        {e.data.map((rowQuestion: any, idx: Key) => {
+                          return <span key={idx} className="space-y-2">
+                            {renderQuestion(rowQuestion.questionType, rowQuestion, true, +idx)}
+                          </span>
+                        })}
+                      </Collapse.Panel>
+                    </Collapse>
+                  }
+
                   return <span key={i}>
                     {renderQuestion(e.questionType, e, true, +i)}
                   </span>
@@ -498,11 +608,11 @@ const AdminDashboard = () => {
                 // @ts-ignore
                 questions.length && questions[0].approvalTypeCode == 'Disetujui'
                   ? null
-                  : <Button variant="success" onClick={() => handleSubmit(true)}>
+                  : <Button variant="success" disabled={disableSubmit} onClick={() => handleSubmit(true)}>
                     Disetujui
                   </Button>
               }
-              <Button variant="danger" onClick={() => handleSubmit(false)}>
+              <Button variant="danger" disabled={disableSubmit} onClick={() => handleSubmit(false)}>
                 {
                   // @ts-ignore
                   questions.length && questions[0].approvalTypeCode == 'Disetujui'

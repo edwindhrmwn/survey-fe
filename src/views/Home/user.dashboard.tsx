@@ -7,7 +7,8 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { Input, Table } from "antd";
+import { Collapse, Input } from "antd";
+import TextArea from "antd/es/input/TextArea";
 
 const UserDashboard = () => {
   const {
@@ -27,6 +28,7 @@ const UserDashboard = () => {
   const [activeQuestion, setActiveQuestion] = useState(0)
   const [showSuccess, setSuccess] = useState(false)
   const [errorUpload, setErrorUpload] = useState('')
+  const [disableSubmit, setDisableSubmit] = useState(false)
   const [acceptedType, _] = useState([
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -52,9 +54,58 @@ const UserDashboard = () => {
 
   const handlOnChange = (data: any, answer: any, additionalAnswer?: any) => {
     const rs: any = []
-    console.log(data, answer, additionalAnswer)
+    // console.log(data, answer, additionalAnswer)
+    // console.log({ questions })
     for (const question of questions) {
       const detail: any = question
+
+      if (detail.questionGroupName) {
+        if (detail.questionGroupName == data.questionGroupName) {
+          const rawData = []
+          for (const question2 of detail.data) {
+            const detail2: any = question2
+
+            if (detail2?.id == data.id) {
+              rawData.push({
+                ...detail2,
+                questionId: detail2.id,
+                userId: sessionStorage.getItem('userId'),
+                answer,
+                additionalAnswer,
+                instrumentId: detail2.instrumentId,
+              })
+            } else {
+              rawData.push({
+                ...detail2,
+                questionId: detail2.id,
+                userId: sessionStorage.getItem('userId'),
+                instrumentId: detail2.instrumentId,
+              })
+            }
+          }
+          rs.push({
+            ...detail,
+            userId: sessionStorage.getItem('userId'),
+            instrumentId: detail.instrumentId,
+            data: rawData,
+          })
+          continue
+        }
+
+        rs.push({
+          ...detail,
+          data: detail.data.map((e: any) => {
+            return {
+              ...e,
+              questionId: e.id,
+              userId: sessionStorage.getItem('userId'),
+              instrumentId: e.instrumentId,
+            }
+          })
+        })
+        continue
+      }
+
       if (detail?.id == data.id) {
         rs.push({
           ...detail,
@@ -80,6 +131,7 @@ const UserDashboard = () => {
   }
 
   const handleSubmit = async () => {
+    setDisableSubmit(true)
     const data = questions.map((v: any) => ({ ...v, approvalTypeId: null, approvalTypeCode: '' }))
 
     await handleSubmitAnswer(data)
@@ -90,6 +142,7 @@ const UserDashboard = () => {
 
     setTimeout(() => {
       setSuccess(false)
+      setDisableSubmit(false)
     }, 3000);
   }
 
@@ -148,6 +201,13 @@ const UserDashboard = () => {
           <div>
             <span>{data.question}</span>
             <Input value={data?.answer || ''} disabled={isDisable} onChange={(e) => handlOnChange(data, e.target.value)} />
+          </div>
+        )
+      case 'essay area':
+        return (
+          <div>
+            <span>{data.question}</span>
+            <TextArea value={data?.answer || ''} disabled={isDisable} onChange={(e) => handlOnChange(data, e.target.value)} />
           </div>
         )
       case 'options':
@@ -334,6 +394,23 @@ const UserDashboard = () => {
                       <Form className="flex flex-col w-full gap-3">
                         {questions.length ?
                           questions.map((e: any, i: Key) => {
+
+                            if (!!e.questionGroupName) {
+                              return <Collapse
+                                key={i}
+                                defaultActiveKey={["0"]}
+                                expandIconPosition="start"
+                              >
+                                <Collapse.Panel key={i} header={e.questionGroupName}>
+                                  {e.data.map((rowQuestion: any, idx: Key) => {
+                                    return <span key={idx} className="space-y-2">
+                                      {renderQuestion(rowQuestion.questionType, rowQuestion, detail.questions > 0 && !!detail.isCompleted && detail.approvalTypeCode != 'Tidak Disetujui', +idx)}
+                                    </span>
+                                  })}
+                                </Collapse.Panel>
+                              </Collapse>
+                            }
+
                             return <span key={i}>
                               {renderQuestion(e.questionType, e, detail.questions > 0 && !!detail.isCompleted && detail.approvalTypeCode != 'Tidak Disetujui', +i)}
                             </span>
@@ -347,7 +424,7 @@ const UserDashboard = () => {
                           <Button variant="secondary" onClick={handleCloseQuestion}>
                             Tutup
                           </Button>
-                          <Button variant="primary" onClick={handleSubmit}>
+                          <Button variant="primary" disabled={disableSubmit} onClick={handleSubmit}>
                             Simpan
                           </Button>
                         </>
